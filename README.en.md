@@ -26,6 +26,8 @@ The app runs in the background, reads character information through Npcap and up
 
 Dungeon and boss names are filled in from recognized game data. Boss combat takes priority over recent crafting or gathering. AFK, open-world locations and individual Shugo competition names are not detected.
 
+Dungeon names require a captured map-load message. Party information alone is not treated as your current location. If the app starts mid-session, the name may remain unavailable until the next map load; a departure or transition clears the previous location.
+
 ## Discord examples
 
 ![Discord member list, hover preview and profile with fictional data](docs/discord-examples.png)

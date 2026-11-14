@@ -10,12 +10,28 @@ pub struct Activity {
 }
 
 impl Activity {
+    // A party roster can keep naming a dungeon long after the player leaves.
+    // Presence requires an actual map load; unknown/transition is not a place.
+    pub fn dungeon_id(&self) -> i32 {
+        self.map.filter(|id| (600_000..700_000).contains(id)).unwrap_or(0)
+    }
+
+    fn leave_location(&mut self) {
+        self.map = None;
+        self.action = None;
+        self.festival_until = None;
+    }
+
     pub fn observe(&mut self, packet: &[u8], now: i64) {
         let prefix = read_varint(packet, 0);
         if prefix.length <= 0 { return; }
         let o = prefix.length as usize;
         let Some(op) = packet.get(o..o + 2) else { return; };
         let body = &packet[o + 2..];
+        if server_move_port(packet).is_some()
+            || (op == [0x23, 0x36] && body.first() == Some(&0)) {
+            self.leave_location();
+        }
         if op == [0x21, 0x36] && body.len() >= 8 {
             let map = i32::from_le_bytes(body[4..8].try_into().unwrap());
             if self.map != Some(map) { self.action = None; self.festival_until = None; }
@@ -28,6 +44,9 @@ impl Activity {
             let state = body[4];
             let started = i64::from_le_bytes(body[5..13].try_into().unwrap());
             let deadline = i64::from_le_bytes(body[13..21].try_into().unwrap());
+            if self.dungeon_id() > 0 && self.dungeon_id() == content as i32 && state == 4 && started != 0 {
+                self.leave_location();
+            }
             self.festival_until = if content == 142_019 && (state == 1 || state == 2) && started > 0
                 && (deadline == 0 || deadline > now) {
                 Some(if deadline > now { deadline.min(now + 20 * 60_000) } else { now + 10 * 60_000 })
@@ -146,5 +165,41 @@ mod tests {
         assert_eq!(server_move_port(&p[..10]),None);
         let mut s=Activity::default(); s.observe(&p,1_000);
         assert_eq!(s.describe("In game",0,2_000),"In game");
+    }
+
+    #[test]
+    fn location_requires_map_and_leaving_clears_it_before_the_next_teleport() {
+        let mut s = Activity::default();
+        assert_eq!(s.dungeon_id(), 0);
+        map(&mut s, 600062);
+        assert_eq!(s.dungeon_id(), 600062);
+        let mut run = vec![];
+        run.extend(600062u32.to_le_bytes()); run.push(4);
+        run.extend(1_000i64.to_le_bytes()); run.extend(0i64.to_le_bytes());
+        s.observe(&packet([0x00, 0x61], &run), 2_000);
+        assert_eq!(s.dungeon_id(), 0, "leaving a run needs no later open-world TP");
+        run[4] = 2;
+        s.observe(&packet([0x00, 0x61], &run), 3_000);
+        assert_eq!(s.dungeon_id(), 0, "run/party updates do not prove current location");
+        map(&mut s, 600062);
+        map(&mut s, 1010);
+        assert_eq!(s.dungeon_id(), 0);
+        map(&mut s, 999999);
+        assert_eq!(s.dungeon_id(), 0, "unknown maps never inherit a dungeon");
+    }
+
+    #[test]
+    fn local_transition_and_server_handoff_invalidate_old_dungeon() {
+        let mut s = Activity::default(); map(&mut s, 600062);
+        s.observe(&packet([0x23, 0x36], &[7, 0, 0]), 1_000);
+        assert_eq!(s.dungeon_id(), 600062, "another entity moving is not our teleport");
+        s.observe(&packet([0x23, 0x36], &[0, 0, 0]), 2_000);
+        assert_eq!(s.dungeon_id(), 0);
+        map(&mut s, 600062);
+        assert_eq!(s.dungeon_id(), 600062, "a confirmed internal teleport restores location");
+        let mut body = vec![0xef, 0x10, 14];
+        body.extend(b"193.202.112.81"); body.extend(13328u16.to_le_bytes());
+        s.observe(&packet([0x16, 0x36], &body), 3_000);
+        assert_eq!(s.dungeon_id(), 0);
     }
 }

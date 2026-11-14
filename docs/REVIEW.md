@@ -1,8 +1,10 @@
-# Private beta review / Przegląd prywatnej bety
+# Beta release checks / Przegląd bety
 
-Candidate: **0.2.0-beta.3**. This document does not authorize changing repository visibility.
+Candidate: **0.2.0-beta.4**.
 
 ## Prepared changes
+
+- Dungeon names require a captured map load. Party roster updates cannot restore an old location. Run departure, local teleport and server handoff invalidate the previous location; open-world/unknown maps show no dungeon. Verify exiting Shattered Arkanis before using another teleport, including a normal open-world mob kill.
 
 - Capture gaps show a readable bilingual warning for 15 seconds after the last warning. Expiry is not a claim of stream recovery. Actual engine errors remain visible and are not replaced by warnings.
 
@@ -20,7 +22,7 @@ Candidate: **0.2.0-beta.3**. This document does not authorize changing repositor
 
 ## Checks on the target computer
 
-- [ ] Install into a chosen folder; desktop and Start menu shortcuts show Winged A. The window title says `0.2.0-beta.3`.
+- [ ] Install into a chosen folder; desktop and Start menu shortcuts show Winged A. The window title says `0.2.0-beta.4`.
 - [ ] Switch English/Polski, restart and confirm the language is remembered.
 - [ ] Open **Licenses & source** and check notices and the source link.
 - [ ] Run Discord desktop and AION 2. If the game launcher errors, exit Presence, start the game first, then Presence. Leave ExitLag as configured.
@@ -34,10 +36,10 @@ Candidate: **0.2.0-beta.3**. This document does not authorize changing repositor
 
 Automated checks do not replace these live-session checks. Windows binaries are currently unsigned. No assurance of NC approval or account safety is provided; see the README's game-rules section.
 
-## Before making the repository public
+## Release privacy and source
 
-Review this candidate first. Changing visibility also exposes existing Git history, commit-author metadata and old releases, not just the current README. No original user screenshots or local settings should be added. Keep `LICENSE`, `NOTICE.md`, dependency license supplements and matching source distribution available.
+The publication repository uses a clean history with GitHub noreply identities. Keep the old archive private. Do not add original user screenshots or local settings. Keep `LICENSE`, `NOTICE.md`, dependency license supplements and matching source distribution available.
 
 ## Po polsku
 
-Sprawdź nowy instalator, skróty, języki, menu **Licencje i źródła**, nową integrację Discord i ikonki klas. Następnie sprawdź listę osób, podgląd po najechaniu i profil, crafting, zbieranie, dungeon/bossa oraz eksperymentalny ogólny status Shugo. Nazwy poszczególnych konkurencji Shugo nie są jeszcze rozpoznawane. Zweryfikuj wyczyszczenie statusu po zamknięciu gry i autostart po aktualizacji. Repozytorium pozostaje prywatne do Twojej decyzji po przeglądzie.
+Sprawdź nowy instalator, skróty, języki, menu **Licencje i źródła**, nową integrację Discord i ikonki klas. Następnie sprawdź listę osób, podgląd po najechaniu i profil, crafting, zbieranie, dungeon/bossa oraz eksperymentalny ogólny status Shugo. Nazwy poszczególnych konkurencji Shugo nie są jeszcze rozpoznawane. Zweryfikuj wyczyszczenie statusu po zamknięciu gry i autostart po aktualizacji. Repozytorium jest publiczne; zweryfikuj to wydanie w rzeczywistej sesji.

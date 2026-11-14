@@ -31,9 +31,9 @@ fn english_class(class: a2tools_dps_meter_lib::entity::job_class::JobClass) -> &
     use a2tools_dps_meter_lib::entity::job_class::JobClass::*;
     match class { Gladiator=>"Gladiator", Templar=>"Templar", Ranger=>"Ranger", Assassin=>"Assassin", Sorcerer=>"Sorcerer", Cleric=>"Cleric", Elementalist=>"Spiritmaster", Chanter=>"Chanter", Fighter=>"Brawler" }
 }
-fn snapshot(storage: &DataStorage, npcs: &NpcLookup, dungeons: &Value, servers: &Value, running: bool, port: Option<u16>, device: Option<String>, capture_ok: bool) -> Value {
+fn snapshot(storage: &DataStorage, npcs: &NpcLookup, dungeons: &Value, servers: &Value, running: bool, port: Option<u16>, device: Option<String>, capture_ok: bool, dungeon: i32) -> Value {
     let p = storage.local_profile();
-    let dungeon = storage.current_dungeon_id();
+    // Location is confirmed by presence map frames, never a stale party roster.
     let mut activity = String::new();
     let target = storage.current_target();
     if let Some(code) = storage.mob_code(target) {
@@ -55,7 +55,7 @@ fn snapshot(storage: &DataStorage, npcs: &NpcLookup, dungeons: &Value, servers: 
             activity = if activity.is_empty() { place } else { format!("{place} · {activity}") };
         }
     }
-    // No claim to detect gathering/crafting/AFK: only states the parser actually knows.
+    // Crafting, gathering and event composition are added by Activity below.
     if activity.is_empty() { activity = "In game".into(); }
     let server = servers.get("servers").and_then(|s| s.get(p.server_id.to_string())).and_then(|s| s.get("en")).and_then(Value::as_str).unwrap_or("");
     json!({ "schema":1, "updatedAt":now_ms(), "running":running, "captureOk":capture_ok, "port":port, "device":device,
@@ -113,7 +113,7 @@ async fn main() {
         // The upstream app normally runs this in its meter refresh. The headless
         // worker must also select the boss before the presence can name it.
         let _ = target_selector.get_dps();
-        let mut data = snapshot(&storage, &npcs, &dungeons, &servers, running, detector.current_port(), detector.current_device(), capturer.is_running());
+        let mut data = snapshot(&storage, &npcs, &dungeons, &servers, running, detector.current_port(), detector.current_device(), capturer.is_running(), activities.lock().dungeon_id());
         let activity = activities.lock().describe(data["activity"].as_str().unwrap_or("In game"), data["dungeonId"].as_i64().unwrap_or(0), now_ms());
         data["activity"] = json!(activity);
         let output = serde_json::to_string(&data).expect("snapshot JSON");
@@ -139,7 +139,7 @@ mod tests {
         storage.note_self_profile("Kowal", Some(JobClass::Gladiator), Some(50));
         storage.note_self_combat_power("Kowal", 123450);
         storage.note_self_gear_score("Kowal", 2050);
-        let data = snapshot(&storage, &NpcLookup::new(), &json!({}), &json!({}), true, None, None, true);
+        let data = snapshot(&storage, &NpcLookup::new(), &json!({}), &json!({}), true, None, None, true, 0);
         assert_eq!(data["character"]["name"], "Kowal");
         assert_eq!(data["character"]["class"], "Gladiator");
         assert_eq!(data["character"]["combatPower"], 123450);
@@ -148,8 +148,20 @@ mod tests {
     }
     #[test]
     fn unknown_identity_never_fabricates_a_character() {
-        let data = snapshot(&DataStorage::new(), &NpcLookup::new(), &json!({}), &json!({}), true, None, None, true);
+        let data = snapshot(&DataStorage::new(), &NpcLookup::new(), &json!({}), &json!({}), true, None, None, true, 0);
         assert!(data["character"].is_null());
+    }
+    #[test]
+    fn stale_party_dungeon_is_never_published_as_current_location() {
+        let storage = DataStorage::new();
+        storage.set_current_dungeon(600062);
+        let catalog = json!({"600062":{"name":"Shattered Arkanis"}});
+        let data = snapshot(&storage, &NpcLookup::new(), &catalog, &json!({}), true, None, None, true, 0);
+        assert_eq!(data["activity"], "In game");
+        assert_eq!(data["dungeonId"], 0);
+        assert_eq!(storage.current_dungeon_id(), 600062, "the stale parser fallback still exists but is not used by presence");
+        let confirmed = snapshot(&storage, &NpcLookup::new(), &catalog, &json!({}), true, None, None, true, 600062);
+        assert_eq!(confirmed["activity"], "Shattered Arkanis (Conquest Normal)");
     }
     #[test]
     fn captured_self_record_reaches_presence_through_stream_parser() {
@@ -165,7 +177,7 @@ mod tests {
         let npcs = Arc::new(NpcLookup::new());
         let mut parser = StreamProcessor::new(storage.clone(), Arc::new(SkillLookup::new()), npcs.clone());
         assert_eq!(parser.consume_stream(&frame),frame.len());
-        let data = snapshot(&storage, &npcs, &json!({}), &json!({}), true, None, None, true);
+        let data = snapshot(&storage, &npcs, &json!({}), &json!({}), true, None, None, true, 0);
         assert_eq!(data["character"]["name"],"Naicha");
         assert_eq!(data["character"]["class"],"Cleric");
         assert_eq!(data["character"]["gearScore"],383);
@@ -184,10 +196,10 @@ mod tests {
         storage.append_damage(hit);
         let mut selector=DpsCalculator::new(storage.clone(),Arc::new(SkillLookup::new()),npcs.clone(),Arc::new(PingTracker::new()));
         let _=selector.get_dps();
-        let data=snapshot(&storage,&npcs,&json!({}),&json!({}),true,None,None,true);
+        let data=snapshot(&storage,&npcs,&json!({}),&json!({}),true,None,None,true,0);
         assert_eq!(data["activity"],"Fighting Test Boss");
         storage.set_current_dungeon(600012);
-        let data=snapshot(&storage,&npcs,&json!({"600012":{"name":"Fire Temple"}}),&json!({}),true,None,None,true);
+        let data=snapshot(&storage,&npcs,&json!({"600012":{"name":"Fire Temple"}}),&json!({}),true,None,None,true,600012);
         assert_eq!(data["activity"],"Fire Temple (Conquest Normal) · Fighting Test Boss");
     }
 }

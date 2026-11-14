@@ -26,6 +26,8 @@ Działa w tle, odczytując informacje o Twojej postaci przez Npcap i aktualizuj�
 
 Nazwy dungeona i bossa pochodzą z rozpoznanych danych gry. Walka z bossem ma pierwszeństwo przed ostatnim craftingiem i zbieraniem. AFK, lokacje otwartego świata i nazwy poszczególnych konkurencji Shugo nie są wykrywane. Tekst aktywności wysyłany na Discord pozostaje angielski.
 
+Nazwa dungeona wymaga odebrania komunikatu wczytania mapy. Sama informacja o grupie nie jest traktowana jako Twoja aktualna lokalizacja. Po uruchomieniu aplikacji w trakcie sesji nazwa może pojawić się dopiero przy kolejnym wczytaniu mapy; sygnał wyjścia lub przejścia czyści poprzednią lokalizację.
+
 ## Przykłady na Discordzie
 
 ![Lista osób, podgląd po najechaniu i profil z fikcyjnymi danymi](docs/discord-examples.png)
