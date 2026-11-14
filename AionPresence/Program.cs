@@ -41,5 +41,8 @@ internal static class Program
             return;
         }
         Application.Run(new MainForm(false, args.Contains("--tray"), showWindow));
+        // The installer must see the old instance as fully stopped.
+        mutex.ReleaseMutex();
+        Updates.LaunchPending();
     }
 }

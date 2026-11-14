@@ -6,7 +6,8 @@ use a2tools_dps_meter_lib::capture::{loot::{self, Gather}, stream_processor::rea
 pub struct Activity {
     map: Option<i32>,
     action: Option<(&'static str, i64)>,
-    festival_until: Option<i64>,
+    festival: Option<(u32, &'static str, i64)>,
+    ended_festival: Option<u32>,
 }
 
 impl Activity {
@@ -19,7 +20,7 @@ impl Activity {
     fn leave_location(&mut self) {
         self.map = None;
         self.action = None;
-        self.festival_until = None;
+        self.festival = None;
     }
 
     pub fn observe(&mut self, packet: &[u8], now: i64) {
@@ -34,11 +35,18 @@ impl Activity {
         }
         if op == [0x21, 0x36] && body.len() >= 8 {
             let map = i32::from_le_bytes(body[4..8].try_into().unwrap());
-            if self.map != Some(map) { self.action = None; self.festival_until = None; }
+            if self.map != Some(map) {
+                self.action = None;
+                self.festival = match crate::shugo::game(map) {
+                    Some((id, name)) if self.ended_festival != Some(id) => Some((id, name, now + 20 * 60_000)),
+                    _ => None,
+                };
+                if crate::shugo::game(map).is_none() { self.ended_festival = None; }
+            }
             self.map = Some(map);
         }
-        // A confirmed participant run, not the 01 60 world-wide schedule.
-        // 142019 is the Shugo run observed by the pinned upstream parser.
+        // A participant run, not the 01 60 world-wide schedule. 142019 was
+        // incorrectly used in earlier releases; actual Shugo ids are 500035–43.
         if op == [0x00, 0x61] && body.len() == 21 {
             let content = u32::from_le_bytes(body[..4].try_into().unwrap());
             let state = body[4];
@@ -47,10 +55,18 @@ impl Activity {
             if self.dungeon_id() > 0 && self.dungeon_id() == content as i32 && state == 4 && started != 0 {
                 self.leave_location();
             }
-            self.festival_until = if content == 142_019 && (state == 1 || state == 2) && started > 0
-                && (deadline == 0 || deadline > now) {
-                Some(if deadline > now { deadline.min(now + 20 * 60_000) } else { now + 10 * 60_000 })
-            } else { None };
+            if let Some((id, name)) = crate::shugo::game(content as i32) {
+                if (state == 1 || state == 2) && started > 0 && (deadline == 0 || deadline > now) {
+                    self.ended_festival = None;
+                    self.festival = Some((id, name,
+                        if deadline > now { deadline.min(now + 20 * 60_000) } else { now + 10 * 60_000 }));
+                } else if (state == 3 || state == 4) && started != 0
+                    && (self.festival.is_some_and(|(active, _, _)| active == id)
+                        || self.map.and_then(crate::shugo::game).is_some_and(|(active, _)| active == id)) {
+                    self.festival = None;
+                    self.ended_festival = Some(id);
+                }
+            }
         }
         if let Some(gather) = loot::gather(packet) {
             match gather {
@@ -74,9 +90,14 @@ impl Activity {
 
     pub fn describe(&self, base: &str, dungeon: i64, now: i64) -> String {
         // Combat takes precedence over a recent completed craft or gather.
-        if base.contains("Fighting ") { return base.to_string(); }
+        let festival = self.festival.filter(|(_, _, until)| now < *until)
+            .map(|(_, name, _)| format!("Shugo Festival · {name}"));
+        if base.contains("Fighting ") {
+            return if dungeon <= 0 && festival.is_some() { format!("{} · {base}", festival.unwrap()) }
+                else { base.to_string() };
+        }
         let place = if dungeon > 0 && base != "In game" { Some(base) }
-            else if self.festival_until.is_some_and(|until| now < until) { Some("Shugo Festival") }
+            else if festival.is_some() { festival.as_deref() }
             else { None };
         let action = self.action.filter(|(_, until)| now < *until).map(|(kind, _)| kind);
         match (place, action) {
@@ -149,13 +170,53 @@ mod tests {
         let mut s = Activity::default();
         s.observe(&packet([0x01,0x60], &[3,1,2,3,2]),1_000);
         assert_eq!(s.describe("In game",0,2_000),"In game");
-        let mut body=vec![]; body.extend(142_019u32.to_le_bytes()); body.push(2);
+        let mut body=vec![]; body.extend(500_043u32.to_le_bytes()); body.push(2);
         body.extend(1_000i64.to_le_bytes()); body.extend(0i64.to_le_bytes());
         s.observe(&packet([0x00,0x61],&body),1_000);
-        assert_eq!(s.describe("In game",0,2_000),"Shugo Festival");
+        assert_eq!(s.describe("In game",0,2_000),"Shugo Festival · Defend Shugo Merchants");
         assert_eq!(s.describe("In game",0,601_000),"In game");
         body[4]=3; s.observe(&packet([0x00,0x61],&body),3_000);
         assert_eq!(s.describe("In game",0,3_001),"In game");
+    }
+    #[test]
+    fn all_nine_games_and_both_factions_are_recognized_from_map_loads() {
+        for (content, other, name) in crate::shugo::GAMES {
+            for id in [content as i32, other] {
+                let mut s = Activity::default(); map(&mut s, id);
+                assert_eq!(s.describe("In game", 0, 2_000), format!("Shugo Festival · {name}"));
+                map(&mut s, 1010);
+                assert_eq!(s.describe("In game", 0, 2_000), "In game", "returning clears {id}");
+            }
+        }
+    }
+    #[test]
+    fn entry_map_restores_event_after_handoff_and_unrelated_runs_do_not_clear_it() {
+        let mut s = Activity::default();
+        map(&mut s, 1010);
+        let mut body = vec![]; body.extend(500043u32.to_le_bytes()); body.push(2);
+        body.extend(1_000i64.to_le_bytes()); body.extend(0i64.to_le_bytes());
+        s.observe(&packet([0x00, 0x61], &body), 1_000);
+        s.observe(&packet([0x23, 0x36], &[0]), 1_001);
+        map(&mut s, 500043);
+        assert!(s.describe("In game", 0, 2_000).contains("Defend Shugo Merchants"));
+        body[..4].copy_from_slice(&600062u32.to_le_bytes());
+        s.observe(&packet([0x00, 0x61], &body), 2_001);
+        assert!(s.describe("In game", 0, 2_002).contains("Defend Shugo Merchants"));
+        assert!(s.describe("Fighting Thieves", 0, 2_003).starts_with("Shugo Festival · Defend Shugo Merchants"));
+    }
+    #[test]
+    fn actual_upstream_completion_fixture_clears_defend_and_old_wrong_id_never_activates_it() {
+        let mut s = Activity::default(); map(&mut s, 500043);
+        let hex = "1700614ba10700037acd12d0a1010000a26d13d0a1010000";
+        let bytes: Vec<u8> = (0..hex.len()).step_by(2).map(|i| u8::from_str_radix(&hex[i..i+2],16).unwrap()).collect();
+        s.observe(&bytes, 2_000);
+        map(&mut s, 500043);
+        assert_eq!(s.describe("In game", 0, 2_001), "In game", "same-map refresh cannot resurrect a finished event");
+        map(&mut s, 142019);
+        let hex = "170061c32a02000246c2f41ea10100000000000000000000";
+        let bytes: Vec<u8> = (0..hex.len()).step_by(2).map(|i| u8::from_str_radix(&hex[i..i+2],16).unwrap()).collect();
+        s.observe(&bytes, 2_000);
+        assert_eq!(s.describe("In game", 0, 2_001), "In game");
     }
     #[test]
     fn handoff_port_is_read_but_not_reported_as_activity() {

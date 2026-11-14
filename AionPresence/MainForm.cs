@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Net.Http;
 using Microsoft.Win32;
 
 namespace AionPresence;
@@ -19,6 +20,13 @@ public sealed class MainForm : Form
     private readonly Label activity = Label("Aktywność  —", 11, Muted);
     private readonly Label error = Label("", 9, Color.FromArgb(239, 183, 130));
     private readonly Button toggle = new() { Text = "Wstrzymaj", Width = 125, Height = 36 };
+    private readonly LinkLabel updateLink = new() { AutoSize = true, Margin = new Padding(0, 4, 0, 0) };
+    private readonly CancellationTokenSource updateStop = new();
+    private AppUpdate? availableUpdate;
+    private bool updateBusy;
+    private DateTimeOffset nextUpdateCheck;
+    private string updateMessage = "Sprawdź aktualizacje";
+    private string? notifiedVersion;
     private bool quitting;
     private bool closing;
     private readonly bool previewMode;
@@ -26,12 +34,12 @@ public sealed class MainForm : Form
     {
         previewMode = preview;
         Text = "AION2 Presence · " + Application.ProductVersion.Split('+')[0];
-        ClientSize = new Size(900, 792); MinimumSize = new Size(800, 830);
+        ClientSize = new Size(900, 824); MinimumSize = new Size(800, 862);
         StartPosition = FormStartPosition.CenterScreen;
         BackColor = Bg; ForeColor = TextColor; Font = new Font("Segoe UI", 10);
         AutoScaleMode = AutoScaleMode.Dpi;
         Icon = AppBrand.LoadIcon();
-        var root = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 9, Padding = new Padding(26), BackColor = Bg };
+        var root = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 10, Padding = new Padding(26), BackColor = Bg };
         root.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
         root.RowStyles.Add(new RowStyle(SizeType.Absolute, 72));
         root.RowStyles.Add(new RowStyle(SizeType.Absolute, 104));
@@ -41,6 +49,7 @@ public sealed class MainForm : Form
         root.RowStyles.Add(new RowStyle(SizeType.Absolute, 140));
         root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
         root.RowStyles.Add(new RowStyle(SizeType.Absolute, 32));
+        root.RowStyles.Add(new RowStyle(SizeType.Absolute, 32));
         root.RowStyles.Add(new RowStyle(SizeType.Absolute, 38));
         Controls.Add(root);
         var header = new Panel { Dock = DockStyle.Fill };
@@ -49,6 +58,7 @@ public sealed class MainForm : Form
         header.Controls.AddRange([title, subtitle]); root.Controls.Add(header);
         var language = UiLanguage.Selector(this, () => {
             prefs.Language = UiLanguage.Language;
+            RefreshUpdateLink();
             if (tray?.ContextMenuStrip is { } menu)
                 foreach (ToolStripItem item in menu.Items) item.Text = UiLanguage.Text(item.Text ?? "");
         }, !preview);
@@ -71,6 +81,10 @@ public sealed class MainForm : Form
         var help = Label("PIERWSZE URUCHOMIENIE\n1. Uruchom Discord desktop i AION 2 na tym samym komputerze.\n2. Pozostaw ExitLag włączony. Odczyt obejmuje też adapter loopback.\n3. Jeśli brak postaci: uruchom aplikację przed wejściem postaci do świata.\n\nWymagany Npcap. Aktywność: boss, dungeon, zbieranie lub crafting.", 10, Muted);
         help.Dock = DockStyle.Fill; help.Padding = new Padding(2, 12, 0, 0); root.Controls.Add(help);
         error.Dock = DockStyle.Fill; error.MaximumSize = new Size(840, 0); error.AutoSize = false; root.Controls.Add(error);
+        var updateRow = new FlowLayoutPanel { Dock = DockStyle.Fill, WrapContents = false };
+        updateLink.LinkColor = Accent;
+        updateLink.LinkClicked += async (_, _) => await UpdateClicked();
+        updateRow.Controls.Add(updateLink); root.Controls.Add(updateRow); RefreshUpdateLink();
         var feedback = new FlowLayoutPanel { Dock = DockStyle.Fill, WrapContents = false };
         var report = new LinkLabel { Text = "Zgłoś błąd", AutoSize = true, LinkColor = Accent, Margin = new Padding(0, 4, 20, 0) };
         report.LinkClicked += (_, _) => Feedback.OpenBug(); feedback.Controls.Add(report);
@@ -95,14 +109,16 @@ public sealed class MainForm : Form
         if (!preview) {
             var menu = new ContextMenuStrip();
             menu.Items.Add(UiLanguage.Text("Otwórz"), null, (_, _) => Restore());
+            menu.Items.Add(UiLanguage.Text("Sprawdź aktualizacje"), null, async (_, _) => { Restore(); await CheckForUpdates(); });
             menu.Items.Add(UiLanguage.Text("Zgłoś błąd"), null, (_, _) => Feedback.OpenBug());
             menu.Items.Add(UiLanguage.Text("Zaproponuj funkcję"), null, (_, _) => Feedback.OpenFeature());
             menu.Items.Add(UiLanguage.Text("Licencje i źródła"), null, (_, _) => ReleaseInfo.ShowLicenses(this));
             menu.Items.Add(UiLanguage.Text("Zakończ"), null, (_, _) => { quitting = true; Close(); });
             tray = new NotifyIcon { Icon = AppBrand.LoadIcon(16), Text = "AION2 Presence", Visible = true, ContextMenuStrip = menu };
             tray.DoubleClick += (_, _) => Restore();
-            timer.Tick += (_, _) => { if (showWindow?.WaitOne(0) == true) Restore(); RefreshState(); }; timer.Start();
-            Shown += (_, _) => { StartApp(); if (startTray) Hide(); };
+            tray.BalloonTipClicked += (_, _) => Restore();
+            timer.Tick += (_, _) => { if (showWindow?.WaitOne(0) == true) Restore(); RefreshState(); if (!updateBusy && DateTimeOffset.UtcNow >= nextUpdateCheck) _ = CheckForUpdates(); }; timer.Start();
+            Shown += async (_, _) => { StartApp(); if (startTray) Hide(); await CheckForUpdates(); };
         } else {
             capture.Text = "Postać rozpoznana · Loopback / tunel · port 13328";
             discord.Text = "Podgląd demonstracyjny — bez wysyłania statusu do Discorda";
@@ -134,6 +150,50 @@ public sealed class MainForm : Form
     private void SavePrefs() { if (!previewMode) { try { prefs.Language = UiLanguage.Language; prefs.Save(); } catch (Exception e) { error.Text = e.Message; } } }
     private void Restore() { Show(); WindowState = FormWindowState.Normal; Activate(); }
     private void StartApp() { app = new PresenceApp(() => prefs); app.Start(); toggle.Text = "Wstrzymaj"; }
+    private void RefreshUpdateLink()
+    {
+        updateLink.Enabled = !updateBusy;
+        updateLink.Text = availableUpdate is not null && !updateBusy
+            ? UiLanguage.Text("Nowa wersja: ") + availableUpdate.Version + " — " + UiLanguage.Text("Pobierz i zainstaluj")
+            : UiLanguage.Text(updateMessage);
+    }
+    private async Task CheckForUpdates()
+    {
+        if (previewMode || updateBusy || quitting) return;
+        updateBusy = true; nextUpdateCheck = DateTimeOffset.UtcNow.AddHours(6);
+        updateMessage = "Sprawdzam aktualizacje…"; RefreshUpdateLink();
+        try {
+            availableUpdate = await Updates.Check(Application.ProductVersion.Split('+')[0], updateStop.Token);
+            updateMessage = "Masz najnowszą wersję — sprawdź ponownie";
+            if (availableUpdate is not null && notifiedVersion != availableUpdate.Version) {
+                notifiedVersion = availableUpdate.Version;
+                tray?.ShowBalloonTip(7000, "AION2 Presence", UiLanguage.Text("Dostępna nowa wersja: ") + availableUpdate.Version, ToolTipIcon.Info);
+            }
+        } catch (OperationCanceledException) { if (!quitting) updateMessage = "Nie udało się sprawdzić aktualizacji — spróbuj ponownie"; }
+        catch (Exception e) when (e is HttpRequestException or IOException or System.Text.Json.JsonException or InvalidOperationException or FormatException or KeyNotFoundException) {
+            updateMessage = "Nie udało się sprawdzić aktualizacji — spróbuj ponownie";
+        } finally { updateBusy = false; if (!IsDisposed) RefreshUpdateLink(); }
+    }
+    private async Task UpdateClicked()
+    {
+        if (updateBusy) return;
+        if (availableUpdate is null) { await CheckForUpdates(); return; }
+        var candidate = availableUpdate;
+        if (MessageBox.Show(this, UiLanguage.Text("Pobrać aktualizację? Po sprawdzeniu pliku aplikacja zamknie się i otworzy instalator. Ustawienia zostaną zachowane."), "AION2 Presence · " + candidate.Version, MessageBoxButtons.OKCancel, MessageBoxIcon.Information) != DialogResult.OK) return;
+        updateBusy = true; updateMessage = "Pobieram aktualizację…"; RefreshUpdateLink();
+        try {
+            var downloaded = await Updates.Download(candidate, new Progress<int>(percent => {
+                if (!IsDisposed) updateLink.Text = UiLanguage.Text("Pobieram aktualizację…") + " " + percent + "%";
+            }), updateStop.Token);
+            Updates.InstallOnExit(downloaded);
+            quitting = true; Close();
+        } catch (OperationCanceledException) {
+            if (!quitting) MessageBox.Show(this, UiLanguage.Text("Aktualizacja nie powiodła się. Spróbuj ponownie lub pobierz instalator z GitHub Releases."), "AION2 Presence");
+        }
+        catch (Exception e) when (e is HttpRequestException or IOException or UnauthorizedAccessException) {
+            MessageBox.Show(this, UiLanguage.Text("Aktualizacja nie powiodła się. Spróbuj ponownie lub pobierz instalator z GitHub Releases."), "AION2 Presence");
+        } finally { updateBusy = false; if (!IsDisposed) RefreshUpdateLink(); }
+    }
     private async Task Toggle()
     {
         toggle.Enabled = false;
@@ -160,8 +220,9 @@ public sealed class MainForm : Form
         if (previewMode || closing) return;
         if (!quitting && e.CloseReason == CloseReason.UserClosing) { e.Cancel = true; Hide(); return; }
         e.Cancel = true; quitting = true; Enabled = false; timer.Stop();
+        updateStop.Cancel();
         if (app is not null) { var current = app; app = null; await current.DisposeAsync(); }
         tray?.Dispose(); closing = true; Close();
     }
-    protected override void Dispose(bool disposing) { if (disposing) { timer.Dispose(); tray?.Dispose(); } base.Dispose(disposing); }
+    protected override void Dispose(bool disposing) { if (disposing) { timer.Dispose(); tray?.Dispose(); updateStop.Dispose(); } base.Dispose(disposing); }
 }

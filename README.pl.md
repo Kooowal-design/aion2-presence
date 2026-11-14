@@ -21,10 +21,10 @@ Działa w tle, odczytując informacje o Twojej postaci przez Npcap i aktualizuj�
 | Walka z rozpoznanym bossem poza dungeonem | `Fighting Nazwa bossa` |
 | Crafting, po potwierdzonym wykonaniu receptury | `Crafting` |
 | Zbieranie surowców | `Gathering` |
-| Rozpoznany run Shugo — eksperymentalnie, ograniczona obsługa | `Shugo Festival` |
+| Konkurencja Shugo — eksperymentalnie, 9 konkurencji obu frakcji | `Shugo Festival · Defend Shugo Merchants` |
 | Brak rozpoznanej aktywności | `In game` |
 
-Nazwy dungeona i bossa pochodzą z rozpoznanych danych gry. Walka z bossem ma pierwszeństwo przed ostatnim craftingiem i zbieraniem. AFK, lokacje otwartego świata i nazwy poszczególnych konkurencji Shugo nie są wykrywane. Tekst aktywności wysyłany na Discord pozostaje angielski.
+Nazwy dungeona i bossa pochodzą z rozpoznanych danych gry. Walka z bossem ma pierwszeństwo przed ostatnim craftingiem i zbieraniem. AFK i lokacje otwartego świata nie są wykrywane. Tekst aktywności wysyłany na Discord pozostaje angielski.
 
 Nazwa dungeona wymaga odebrania komunikatu wczytania mapy. Sama informacja o grupie nie jest traktowana jako Twoja aktualna lokalizacja. Po uruchomieniu aplikacji w trakcie sesji nazwa może pojawić się dopiero przy kolejnym wczytaniu mapy; sygnał wyjścia lub przejścia czyści poprzednią lokalizację.
 
@@ -64,7 +64,7 @@ Instalator i aplikacja obsługują **English / Polski**. Wybór języka jest zap
 
 Zbieranie jest rozpoznawane po komunikatach rozpoczęcia i wyniku; status wygasa po 15/8 sekundach bez kolejnego zdarzenia. Crafting jest widoczny przez 20 sekund po potwierdzonym wykonaniu receptury. Samo otwarcie okna receptur nie uruchamia tego statusu. Walka z bossem ma pierwszeństwo.
 
-Eksperymentalna obsługa Shugo pokazuje `Shugo Festival` dla jednego rozpoznawanego obecnie wariantu, po potwierdzeniu udziału. Sam harmonogram nie uruchamia tego statusu. Nie rozpoznajemy jeszcze nazw konkurencji ani pozostałych wariantów Shugo. Bez terminu końca status wygasa po 10 minutach; podany termin jest ograniczony do 20 minut. Koniec runu lub zmiana mapy czyści status.
+Eksperymentalna obsługa Shugo rozpoznaje dziewięć konkurencji na mapach Elyosów i Asmodian: Jump Jump, Mysterious Track, Odyle Flight Frenzy, Defend Shugo Merchants, Not This Tile?, Wraith Evasion, Hidden Lugi, Goldrin's Treasure oraz Up! Up! Up! Status zawiera nazwę konkurencji, po rozpoznaniu jej mapy lub aktywnego runu. Sam harmonogram nie uruchamia statusu. Termin runu jest ograniczony do 20 minut; bez terminu status trwa do 10 minut, a sam odczyt mapy daje maksymalnie 20 minut. Koniec runu lub wyjście czyści status. Obsługa wymaga dalszego sprawdzenia w grze; szczegóły i źródła: [wykrywanie Shugo](docs/SHUGO.md).
 
 Poza rozpoznanym dungeonem/bossem, zbieraniem, ostatnim craftingiem i tym runem Shugo status to `In game`. **Nie rozpoznajemy lokacji otwartego świata ani AFK.**
 
@@ -76,9 +76,19 @@ Opcje **Zgłoś błąd** i **Zaproponuj funkcję** w aplikacji oraz menu przy ze
 
 Formularze są też dostępne bezpośrednio w [Issues](https://github.com/Kooowal-design/aion2-presence/issues/new/choose). Przed dodaniem zrzutu usuń z niego prywatne informacje.
 
+## Aktualizacje
+
+Aplikacja sprawdza publiczne wydania tego projektu na GitHubie przy uruchomieniu i co sześć godzin. Informacja o nowej wersji pojawia się w oknie oraz jako powiadomienie przy zegarze. Aktualizacje można też sprawdzić ręcznie z menu ikony.
+
+Wybierz **Pobierz i zainstaluj**, aby rozpocząć aktualizację. Aplikacja pobierze instalator z tego repozytorium, sprawdzi sumę SHA-256, zakończy działającą kopię i otworzy instalator. Ustawienia i folder instalacji są zachowywane. Instalacja wymaga Twojego potwierdzenia. Wersja beta sprawdza również nowsze wydania beta. Nieudane sprawdzenie nie przerywa odczytu gry.
+
+Wersje starsze niż 0.2.0-beta.5 wymagają jednorazowej ręcznej aktualizacji, aby otrzymać tę funkcję. Pliki nadal nie mają podpisu cyfrowego; sprawdzenie sumy kontrolnej go nie zastępuje.
+
 ## Prywatność i dane
 
 Brak serwera aplikacji, konta, telemetryki, uploadów i zapisu surowych pakietów. Parser czyta ruch przez Npcap, a aplikacja przekazuje wybrane informacje do lokalnego klienta Discorda. Udostępnione pola są widoczne dla odbiorców zgodnie z ustawieniami aktywności Discorda. Brakujące pola są pomijane.
+
+Sprawdzanie aktualizacji łączy się z GitHubem przy starcie i co sześć godzin. Pobieranie uruchamiasz samodzielnie. Nie wysyłamy danych postaci, ustawień ani logów; GitHub otrzymuje standardowe informacje o połączeniu, takie jak adres IP.
 
 Ustawienia zapisują się w `%LOCALAPPDATA%\Aion2Presence`. Odinstalowanie: zakończ aplikację z zasobnika, wyłącz autostart i usuń ten folder oraz skrót AION2 Presence z menu Start.
 

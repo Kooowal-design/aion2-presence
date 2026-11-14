@@ -21,10 +21,10 @@ The app runs in the background, reads character information through Npcap and up
 | Fighting a recognized boss outside a dungeon | `Fighting Boss name` |
 | Crafting, after a confirmed completed craft | `Crafting` |
 | Gathering resources | `Gathering` |
-| Recognized Shugo run — experimental, limited coverage | `Shugo Festival` |
+| Shugo competition — experimental, 9 competitions for both factions | `Shugo Festival · Defend Shugo Merchants` |
 | No recognized activity | `In game` |
 
-Dungeon and boss names are filled in from recognized game data. Boss combat takes priority over recent crafting or gathering. AFK, open-world locations and individual Shugo competition names are not detected.
+Dungeon and boss names are filled in from recognized game data. Boss combat takes priority over recent crafting or gathering. AFK and open-world locations are not detected.
 
 Dungeon names require a captured map-load message. Party information alone is not treated as your current location. If the app starts mid-session, the name may remain unavailable until the next map load; a departure or transition clears the previous location.
 
@@ -64,7 +64,7 @@ The installer and app support **English / Polski**. Use the language selector to
 
 Gathering is detected from start/result messages and expires after 15/8 seconds without another event. Crafting is shown for 20 seconds after a confirmed completed craft; merely opening the recipe window does not activate it. Boss combat takes priority.
 
-Experimental Shugo support shows `Shugo Festival` for one currently recognized variant when participation is confirmed; schedule announcements alone do not trigger it. Individual competition names and other variants are not yet recognized. Without a reported deadline the label expires after 10 minutes; otherwise the deadline is capped at 20 minutes. A run end or map change clears it.
+Experimental Shugo support identifies nine competitions on Elyos and Asmodian maps: Jump Jump, Mysterious Track, Odyle Flight Frenzy, Defend Shugo Merchants, Not This Tile?, Wraith Evasion, Hidden Lugi, Goldrin's Treasure and Up! Up! Up! The status includes the competition name after a known venue map or active run is received. Schedule broadcasts alone do not activate it. Run deadlines are capped at 20 minutes; without a deadline the lease is 10 minutes, and map-only detection lasts at most 20 minutes. Completion or departure clears the event. Live verification is still needed; see [Shugo detection and sources](docs/SHUGO.md).
 
 Outside recognized dungeon/boss activity, gathering, recent crafting or that confirmed Shugo run, the status is `In game`. Open-world locations and **AFK are not detected**.
 
@@ -76,9 +76,19 @@ Use **Report a bug** or **Suggest a feature** in the app or system tray menu. Th
 
 You can also open [Issues](https://github.com/Kooowal-design/aion2-presence/issues/new/choose) directly. Remove private information from screenshots before posting.
 
+## Updates
+
+The app checks this project's public GitHub releases at startup and every six hours. A new-version link appears in the window and a notification is shown in the system tray. You can also check manually from the tray menu.
+
+Select **Download and install** to start an update. The app downloads the installer from this repository, verifies its SHA-256 checksum, closes the running copy and opens the installer. Settings and the installation folder are retained. Installation requires your confirmation; it does not run silently. Updates currently include newer beta releases while you use a beta version. An unsuccessful check does not interrupt game capture.
+
+Versions before 0.2.0-beta.5 need one manual update to receive this feature. Files are still unsigned; checksum verification does not replace a digital signature.
+
 ## Privacy and data
 
 There is no app server, account, telemetry, combat-log upload or raw-packet recording. The parser reads traffic through Npcap, and the app passes selected information to the local Discord client. Visibility follows your Discord activity-sharing settings. Unavailable fields are omitted.
+
+Update checks contact GitHub at startup and every six hours; downloads start only when you request them. No character data, settings or logs are sent. GitHub receives standard connection information such as your IP address.
 
 Settings are stored in `%LOCALAPPDATA%\Aion2Presence`. To uninstall, exit the app from the system tray, disable its Windows startup option, and remove that folder and the chosen installation folder, plus the desktop and Start menu shortcuts.
 

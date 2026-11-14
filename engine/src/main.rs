@@ -6,6 +6,7 @@ use std::io::Write;
 use serde_json::{Value, json};
 use a2tools_dps_meter_lib::{combat::data_storage::DataStorage, i18n::lookup::{NpcLookup, SkillLookup}};
 mod activity;
+mod shugo;
 
 pub use a2tools_dps_meter_lib::{clock, i18n};
 mod capture {

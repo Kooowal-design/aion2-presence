@@ -11,3 +11,5 @@ Reused components include the packet parser, TCP ordering, Npcap capture pipelin
 Discord RPC uses this project's maintainer-owned application identifier, configured in `discord-app.json`. Class artwork is referenced through public Discord CDN image URLs from the upstream presence implementation; changing RPC identity does not require users to register an application or upload assets. These external images remain controlled by their respective owners. AION2 Presence does not require running the upstream application and does not show its name or logo in its product interface or published status.
 
 AION 2 names and game artwork belong to their respective rights holders. This project is not endorsed by NCSOFT or Discord.
+
+The Shugo competition name and content/map identifier lookup was checked against [gaming.tools](https://aion2.gaming.tools/activities/events/shugo-festival). Lookup provenance and detection limits are documented in `docs/SHUGO.md`; game names and identifiers remain NCSOFT game content.

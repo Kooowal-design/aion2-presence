@@ -2,6 +2,9 @@ using System.Buffers.Binary;
 using System.IO.Pipes;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Net;
+using System.Net.Http;
+using System.Security.Cryptography;
 
 namespace AionPresence;
 
@@ -27,6 +30,37 @@ public static class SelfTests
             Check(Program.IsInstaller("Aion2Presence-Setup (1).exe"), "Downloaded installer with duplicate suffix");
             Check(!Program.IsInstaller("Aion2Presence.exe"), "Installed app is not an installer");
             var now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            Check(Updates.Compare("0.2.0-beta.10", "0.2.0-beta.9") > 0, "Numeric beta versions sort correctly");
+            Check(Updates.Compare("0.2.0", "0.2.0-beta.99") > 0, "Stable release sorts after its betas");
+            Check(!Updates.TryVersion("0.2.0-beta/evil", out _, out _), "Invalid release tags rejected");
+            Check(!Updates.AssetUrl("https://github.com/another/repo/releases/download/v0.2.0/Aion2Presence-Setup.exe", "0.2.0", "Aion2Presence-Setup.exe", out _), "Update from another repository rejected");
+            Check(!Updates.AssetUrl("http://github.com/Kooowal-design/aion2-presence/releases/download/v0.2.0/Aion2Presence-Setup.exe", "0.2.0", "Aion2Presence-Setup.exe", out _), "Unencrypted update URL rejected");
+            object Release(string v) => new { draft = false, tag_name = "v" + v, assets = new[] {
+                new { name = "Aion2Presence-Setup.exe", browser_download_url = ReleaseInfo.Repository + "/releases/download/v" + v + "/Aion2Presence-Setup.exe" },
+                new { name = "SHA256SUMS.txt", browser_download_url = ReleaseInfo.Repository + "/releases/download/v" + v + "/SHA256SUMS.txt" } } };
+            var releaseJson = JsonSerializer.Serialize(new[] { Release("0.2.0-beta.9"), Release("0.2.0-beta.10") });
+            Check(Updates.Select(releaseJson, "0.2.0-beta.5")?.Version == "0.2.0-beta.10", "Newest complete beta selected regardless of API order");
+            Check(Updates.Select(releaseJson, "0.2.0") is null, "Stable users do not receive beta updates");
+            Check(Updates.Select(releaseJson, "0.2.0-beta.10") is null, "No same-version update or downgrade");
+            var updateCandidate = Updates.Select(releaseJson, "0.2.0-beta.5")!;
+            var downloadRoot = Path.Combine(Path.GetTempPath(), "aion-presence-update-test-" + Guid.NewGuid().ToString("N"));
+            try {
+                using var downloadMock = new HttpClient(new UpdateTestHandler(false));
+                var downloaded = await Updates.Download(updateCandidate, new Progress<int>(), CancellationToken.None, downloadMock, downloadRoot);
+                Check(File.ReadAllBytes(downloaded.Path).SequenceEqual(UpdateTestHandler.Payload), "Updater downloads and validates checksum without launching installer");
+                using var corruptMock = new HttpClient(new UpdateTestHandler(true));
+                try { await Updates.Download(updateCandidate, new Progress<int>(), CancellationToken.None, corruptMock, downloadRoot); throw new Exception("Corrupt update accepted"); }
+                catch (IOException) { count++; }
+                Check(Directory.GetFiles(downloadRoot, "*.part", SearchOption.AllDirectories).Length == 0, "Failed download leaves no partial installer");
+            } finally {
+                if (Directory.Exists(downloadRoot)) {
+                    foreach (var directory in Directory.GetDirectories(downloadRoot)) {
+                        foreach (var file in Directory.GetFiles(directory)) File.Delete(file);
+                        Directory.Delete(directory);
+                    }
+                    Directory.Delete(downloadRoot);
+                }
+            }
             var diagnostics = new EngineDiagnostics();
             const string gap = "WARN aion_presence_engine::combat::capture_dispatcher: 1587 bytes from port 60728 never reached the capture (on loopback): reading on from the next whole packet";
             diagnostics.Receive(gap, 1000);
@@ -113,4 +147,15 @@ public static class SelfTests
         } catch (Exception e) { return "FAIL: " + e; }
     }
     private static IEnumerable<Control> Flatten(Control root) => new[] { root }.Concat(root.Controls.Cast<Control>().SelectMany(Flatten));
+    private sealed class UpdateTestHandler(bool corrupt) : HttpMessageHandler
+    {
+        internal static readonly byte[] Payload = "isolated update fixture, never executed"u8.ToArray();
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            HttpContent content = request.RequestUri!.AbsolutePath.EndsWith("SHA256SUMS.txt")
+                ? new StringContent((corrupt ? new string('0', 64) : Convert.ToHexString(SHA256.HashData(Payload))) + "  Aion2Presence-Setup.exe\n")
+                : new ByteArrayContent(Payload);
+            return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK) { Content = content });
+        }
+    }
 }

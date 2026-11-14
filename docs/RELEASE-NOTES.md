@@ -1,14 +1,11 @@
 Public beta for Windows · English / Polski
 
-Download **Aion2Presence-Setup.exe** to install. Exit the previous copy from its system tray menu before updating. Npcap, AION 2 and Discord desktop are required on the same computer.
+Download **Aion2Presence-Setup.exe**. Exit the old copy from its system tray menu before this update. Versions before beta.5 do not have the updater yet.
 
-This release changes dungeon location tracking:
+- **In-app updates:** checks GitHub at startup and every six hours, plus a manual check from the tray. The available version appears in the window and a tray notification. Select **Download and install** to download a checksum-verified installer, close the old app and open installation with the existing settings/folder. Installation requires your confirmation. No character data or logs are sent for update checks.
+- **Shugo correction:** replaced the incorrect run identifier, added all nine competition names and 18 Elyos/Asmodian venue maps. Known map entry can identify the event even if its start message was missed. Unrelated run messages no longer clear Shugo. Map entry after a handoff restores the appropriate competition; completion/return clears it. Automated coverage is not a substitute for live checks of all competitions.
+- Previous dungeon location and temporary capture-warning fixes are retained.
 
-- Dungeon names require an observed map load. Party information alone no longer identifies your current location.
-- Leaving a dungeon run, a local teleport or a server handoff invalidates the previous location until a new map load confirms it.
-- Open-world and unknown maps do not inherit the previous dungeon name.
-- If started mid-session, the app may show `In game` until the next map load. Live verification of the reported exit issue is still needed.
+Npcap, AION 2 and Discord desktop are required on the same computer. The Windows executable remains unsigned; checksum verification does not replace a digital signature. Matching source, notices and checksums are attached. See the README for setup, update networking/privacy, supported activities and limitations.
 
-The Windows executable is unsigned; Windows may show an unknown-publisher or SmartScreen warning. Matching source, license notices and SHA-256 checksums are attached. See the README for supported activities, setup and limitations. Use the app or system tray menu to report bugs or suggest features.
-
-**Polski:** Poprawione śledzenie dungeona: nazwa wymaga potwierdzenia mapy, a wyjście z runu, teleport i zmiana serwera unieważniają poprzednią lokalizację. Sama informacja o grupie nie wystarcza już do pokazania dungeona. Przy uruchomieniu w trakcie sesji może być potrzebne kolejne wczytanie mapy. Poprawkę trzeba jeszcze sprawdzić przy rzeczywistym wyjściu z instancji.
+**Polski:** Pierwsza wersja z aktualizacjami w aplikacji: sprawdzanie przy starcie i co sześć godzin, powiadomienie o nowszej wersji oraz pobranie sprawdzonego instalatora. Tę wersję trzeba jeszcze zainstalować ręcznie. Poprawione Shugo obejmuje nazwy dziewięciu konkurencji i mapy obu frakcji; wykrywanie wymaga dalszego sprawdzenia w grze.
