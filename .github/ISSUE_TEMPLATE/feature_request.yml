@@ -1,0 +1,24 @@
+name: Feature request / Propozycja funkcji
+description: Suggest an improvement. English or Polish welcome.
+title: "[Feature] "
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: You can write in English or Polish. / Możesz pisać po polsku lub angielsku.
+  - type: textarea
+    id: need
+    attributes:
+      label: What would this help with? / W czym ma to pomóc?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Your idea / Twój pomysł
+    validations:
+      required: true
+  - type: textarea
+    id: additional
+    attributes:
+      label: Examples or additional details / Przykłady lub dodatkowe informacje

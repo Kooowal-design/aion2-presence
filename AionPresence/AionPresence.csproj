@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>Aion2Presence</AssemblyName>
+    <Version>0.2.0-beta.2</Version>
+    <ApplicationIcon>Assets/app.ico</ApplicationIcon>
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>true</SelfContained>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Assets/app.ico" LogicalName="AionPresence.Icon" />
+    <EmbeddedResource Include="../LICENSE" LogicalName="AionPresence.License" />
+    <EmbeddedResource Include="../NOTICE.md" LogicalName="AionPresence.Notice" />
+    <EmbeddedResource Include="../discord-app.json" LogicalName="AionPresence.DiscordIdentity" />
+    <EmbeddedResource Include="Generated/THIRD-PARTY-NOTICES.txt" LogicalName="AionPresence.ThirdParty" />
+    <EmbeddedResource Include="Generated/release-info.json" LogicalName="AionPresence.ReleaseInfo" />
+  </ItemGroup>
+  <ItemGroup Condition="Exists('../engine/target/release/aion-presence-engine.exe')">
+    <EmbeddedResource Include="../engine/target/release/aion-presence-engine.exe" LogicalName="AionPresence.Engine" />
+  </ItemGroup>
+</Project>

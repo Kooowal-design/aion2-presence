@@ -1,0 +1,20 @@
+[package]
+name = "aion-presence-engine"
+version = "0.1.0"
+edition = "2024"
+license = "GPL-3.0-or-later"
+
+[dependencies]
+a2tools-dps-meter = { path = "../vendor/a2tools/src-tauri", default-features = false }
+serde_json = "1"
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "time", "sync"] }
+parking_lot = "0.12"
+libloading = "0.8"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+windows = { version = "0.59", features = ["Win32_Foundation", "Win32_UI_WindowsAndMessaging", "Win32_System_Threading", "Win32_System_LibraryLoader", "Win32_System_Com", "Win32_UI_Shell"] }
+
+[profile.release]
+strip = true
+lto = "thin"
+codegen-units = 1

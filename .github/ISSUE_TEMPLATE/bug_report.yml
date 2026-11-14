@@ -1,0 +1,50 @@
+name: Bug report / Zgłoś błąd
+description: Report a problem with AION2 Presence. English or Polish welcome.
+title: "[Bug] "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Describe the problem in English or Polish. / Możesz pisać po polsku lub angielsku.
+        Remove private names, emails and account details from screenshots. Do not post tokens, passwords or raw packet/combat logs.
+  - type: input
+    id: version
+    attributes:
+      label: App version / Wersja aplikacji
+      placeholder: 0.2.0-beta.2
+    validations:
+      required: true
+  - type: dropdown
+    id: region
+    attributes:
+      label: Game region / Region gry
+      options:
+        - Global
+        - Taiwan
+        - Korea
+        - Other / Inny
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened? / Co się stało?
+      description: Include what you expected and what actually happened.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce / Jak odtworzyć problem
+      placeholder: "1. ...\n2. ..."
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment / Konfiguracja
+      description: Windows version, Discord desktop version, Npcap version if known, and whether ExitLag is enabled. No IP addresses or account identifiers.
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots or additional details / Zrzuty lub dodatkowe informacje
+      description: Optional. Remove private information before attaching screenshots.

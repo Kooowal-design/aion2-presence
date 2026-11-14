@@ -1,0 +1,10 @@
+/.tools/
+/.research/
+/dist/
+**/bin/
+**/obj/
+/engine/target/
+/AionPresence/Generated/
+*.user
+*.suo
+**/self-test-result.txt
