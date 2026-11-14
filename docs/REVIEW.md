@@ -1,8 +1,10 @@
 # Private beta review / Przegląd prywatnej bety
 
-Candidate: **0.2.0-beta.2**. This document does not authorize changing repository visibility.
+Candidate: **0.2.0-beta.3**. This document does not authorize changing repository visibility.
 
 ## Prepared changes
+
+- Capture gaps show a readable bilingual warning for 15 seconds after the last warning. Expiry is not a claim of stream recovery. Actual engine errors remain visible and are not replaced by warnings.
 
 - Maintainer-owned Discord RPC identity, embedded once during building. Users do not create an app, log in through this tool, or provide a token.
 - Class images use public Discord CDN URLs; provenance is documented in `NOTICE.md`. Their availability is controlled externally.
@@ -18,7 +20,7 @@ Candidate: **0.2.0-beta.2**. This document does not authorize changing repositor
 
 ## Checks on the target computer
 
-- [ ] Install into a chosen folder; desktop and Start menu shortcuts show Winged A. The window title says `0.2.0-beta.2`.
+- [ ] Install into a chosen folder; desktop and Start menu shortcuts show Winged A. The window title says `0.2.0-beta.3`.
 - [ ] Switch English/Polski, restart and confirm the language is remembered.
 - [ ] Open **Licenses & source** and check notices and the source link.
 - [ ] Run Discord desktop and AION 2. If the game launcher errors, exit Presence, start the game first, then Presence. Leave ExitLag as configured.

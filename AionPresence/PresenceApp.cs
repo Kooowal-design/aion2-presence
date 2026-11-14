@@ -19,12 +19,13 @@ public sealed class PresenceApp : IAsyncDisposable
     private long sessionSince;
     private string? identity;
     private string lastError = "";
+    private readonly EngineDiagnostics diagnostics = new();
     private long lastDataAt;
     public string Status { get; private set; } = "Uruchamiam…";
     public string CaptureStatus { get; private set; } = "Czekam na silnik";
     public string Preview { get; private set; } = "";
     public string ProfilePreview { get; private set; } = "";
-    public string LastError => lastError;
+    public string LastError => lastError.Length > 0 ? lastError : diagnostics.Message(Environment.TickCount64);
     public bool Accepted { get; private set; }
     public LiveData? Data => Volatile.Read(ref data);
     public PresenceApp(Func<Preferences> preferences) { this.preferences = preferences; }
@@ -65,6 +66,8 @@ public sealed class PresenceApp : IAsyncDisposable
             WorkingDirectory = AppContext.BaseDirectory
         };
         engine = Process.Start(start) ?? throw new IOException("Nie udało się uruchomić silnika odczytu.");
+        lastError = "";
+        diagnostics.Reset();
         var current = engine;
         reader = Task.Run(async () => {
             while (!ct.IsCancellationRequested) {
@@ -81,7 +84,7 @@ public sealed class PresenceApp : IAsyncDisposable
             while (!ct.IsCancellationRequested) {
                 var line = await current.StandardError.ReadLineAsync(ct);
                 if (line is null) break;
-                if (line.Length > 0) lastError = PresenceFormat.Limit(line, 500);
+                diagnostics.Receive(line, Environment.TickCount64);
             }
         }, ct);
         await Task.CompletedTask;

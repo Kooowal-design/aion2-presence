@@ -41,6 +41,7 @@ public static class UiLanguage
         ("Uruchamiam…", "Starting…"), ("Czekam na silnik", "Waiting for capture engine"),
         ("Nie udało się uruchomić silnika odczytu.", "Cannot start the capture engine."),
         ("Silnik przesłał nieprawidłowy stan.", "The capture engine returned invalid data."),
+        (EngineDiagnostics.CaptureGap, "Gap in game data — capture continues. Some updates may have been missed."),
         ("Silnik nie odpowiada", "Capture engine is not responding"),
         ("Brak odczytu Npcap — sprawdź komunikat poniżej", "No Npcap capture — check the message below"),
         ("Czekam na AION 2", "Waiting for AION 2"),
