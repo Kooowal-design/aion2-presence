@@ -82,7 +82,7 @@ Settings are stored in `%LOCALAPPDATA%\Aion2Presence`. To uninstall, exit the ap
 
 ## Game rules
 
-Passive Npcap capture does not establish compliance with the game's rules. The app does not modify game files or memory, inject packets or automate gameplay. It is not approved by NC. [Section 6 of NC's EULA](https://www.plaync.com/policy/service/game_en) restricts obtaining service data through tools outside the published interfaces; the [AION 2 Global Operation Policy](https://www.plaync.com/policy/operation/aion2global/en) provides sanctions for unauthorized programs. Account safety cannot be guaranteed.
+AION2 Presence uses passive network capture through Npcap, the same approach used by Npcap-based DPS meters. It reads game data to update your Discord activity without modifying game files or memory, injecting packets or automating gameplay. This is an unofficial community project — use it at your own risk and follow the game's rules.
 
 ## Building
 

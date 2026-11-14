@@ -82,7 +82,7 @@ Ustawienia zapisują się w `%LOCALAPPDATA%\Aion2Presence`. Odinstalowanie: zako
 
 ## Zasady gry
 
-Pasywny odczyt Npcap nie jest potwierdzeniem zgodności z regulaminem. Aplikacja nie modyfikuje plików ani pamięci gry, nie wstrzykuje pakietów i nie automatyzuje postaci. Nie jest zatwierdzona przez NC. [EULA NC, §6](https://www.plaync.com/policy/service/game_en) ogranicza pozyskiwanie danych narzędziami spoza udostępnionych interfejsów; [zasady AION 2 Global](https://www.plaync.com/policy/operation/aion2global/en) przewidują sankcje za nieautoryzowane programy. Nie można obiecać braku ryzyka dla konta.
+AION2 Presence korzysta z pasywnego odczytu ruchu sieciowego przez Npcap — na tej samej zasadzie co DPS metery oparte na Npcap. Odczytuje dane gry, aby aktualizować aktywność na Discordzie, bez modyfikowania plików ani pamięci gry, wstrzykiwania pakietów czy automatyzacji rozgrywki. To nieoficjalny projekt społecznościowy — korzystasz z niego na własną odpowiedzialność, z uwzględnieniem zasad gry.
 
 ## Budowanie
 
