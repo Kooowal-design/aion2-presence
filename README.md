@@ -85,7 +85,7 @@ Versions before 0.2.0-beta.5 need one manual update to receive this feature. Fil
 
 ## Privacy and data
 
-There is no app server, account, telemetry, combat-log upload or raw-packet recording. The parser reads traffic through Npcap, and the app passes selected information to the local Discord client. Visibility follows your Discord activity-sharing settings. Unavailable fields are omitted.
+There is no app server, account, telemetry or combat-log upload. Normal Presence does not record raw packets. The separate, explicitly started crafting diagnostic records full incoming game-stream data locally, which may include character information and chat; it never uploads it automatically. See [diagnostic scope and instructions](docs/CRAFTING-DIAGNOSTICS.md). The parser reads traffic through Npcap, and the app passes selected information to the local Discord client. Visibility follows your Discord activity-sharing settings. Unavailable fields are omitted.
 
 Update checks contact GitHub at startup and every six hours; downloads start only when you request them. No character data, settings or logs are sent. GitHub receives standard connection information such as your IP address.
 

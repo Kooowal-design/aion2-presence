@@ -1,21 +1,54 @@
-# Optional crafting discovery probe
+# Optional crafting diagnostic v3
 
-Download the diagnostic ZIP in the ShadowPC browser, extract it, and run
-`Start-Diagnostic.cmd` inside ShadowPC. It starts the bundled PowerShell script;
-the execution-policy override applies only to this helper process. Exit normal Presence
-first; keep AION 2 running. The script guides an idle baseline, one potion
-batch, and cancellation. No per-recipe configuration is planned.
+Download Aion2Presence-Crafting-Diagnostic.zip **inside ShadowPC**, extract it, and run
+Start-Diagnostic.cmd there. Keep AION 2 running and exit normal Presence from its tray menu.
+No installation or transfer from the local PC is required.
 
-Attach the resulting `craft-report.json` in this chat. It is local only and
-contains per-second counts, two-byte message types and body sizes. It contains
-no packet payloads, player identity, chat, network addresses or port numbers.
-This opt-in mode has a 180-second limit and a 50,000-row bound. Normal Presence
-does not write this report. No files are uploaded automatically.
+The helper first checks that game frames arrive. It then guides:
+1. An idle baseline, followed by opening the alchemy recipe window.
+2. ONE automatic potion batch of at least 20 items, observed for 60 seconds, then canceled.
+3. A separate batch of exactly 3 potions, allowed to finish naturally.
+4. The same window/batch/cancel/natural-finish sequence for cooking.
 
-This is a discovery tool, not working workstation-crafting support. Metadata
-can identify candidate messages and cadence, but cannot verify unknown payload
-fields or local-player attribution. Another targeted test may be needed.
-The eventual decoder must recognize workstation start/result/end/cancel,
-exclude morphs and other players, and expire stale state. Do not implement it
-from message frequency alone. Test representative professions if necessary,
-not every item. Source and dependency licenses are supplied with the release.
+Use recipes you already intend to craft. The 20-item batch is canceled early;
+there is no need to finish 200 items. Enter recipe names when prompted if convenient.
+Return to the helper at each requested step; do not start each item manually.
+If a batch ends before cancellation, mention that in the chat instead of repeating it.
+The phase markers describe user action windows, not exact inferred game event times.
+
+## What is recorded
+
+This deliberately replaces the insufficient metadata-only diagnostic.
+All incoming game stream chunks admitted by the existing capture pipeline are stored
+after TCP ordering, before stream assembly, with anonymous connection indices.
+All decoded frames are also stored without an opcode allowlist or payload truncation.
+Each record has an order number, millisecond elapsed time, phase and complete hexadecimal
+bytes. Stream chunks retain the capture timestamp. The report includes numeric local
+player ID when known, capture/port status, per-phase frame counts and stop/error status.
+Engine warnings/errors are saved alongside the trace, including reported TCP gaps or
+capture queue drops. It is not a general PC network recording and does not capture
+client-to-server commands. It does not guarantee Npcap itself received every game byte.
+
+The trace can contain character information, chat and other private game data.
+Do not post it in a public issue or commit it to the repository.
+There is no automatic upload. Normal Presence does not enable this recording.
+
+## Result and limits
+
+Attach the **craft-diagnostic-....zip** printed by the helper in the support chat.
+It includes craft-report.json, craft-trace.jsonl, test-context.json, action markers and
+engine logs, so send the whole ZIP rather than only the small report.
+Trace data is appended and flushed every second; the summary is atomically replaced.
+The helper preserves and packages partial data on an ordinary failure.
+Hard-closing the console may require manually zipping the generated diagnostic folder.
+
+A session stops after 20 minutes or 128 MiB of trace data, or on a recording error.
+Limits and errors are explicit in the report; the helper checks liveness during timed
+steps and before/after input prompts. This tool is passive and does not click in the game.
+
+This is a discovery package, not working crafting detection. The complete bytes let us
+revisit unknown fields and replay parsing without collecting the same missing payload
+again. Potions and food test whether their protocol lifecycle matches; no per-item
+configuration is planned. They cannot prove every profession behaves identically.
+Source and dependency licenses are supplied with the release.
+

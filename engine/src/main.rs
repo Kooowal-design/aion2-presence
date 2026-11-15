@@ -1,4 +1,5 @@
-//! Standalone capture worker. No Tauri, A2Tools process, overlays, uploads or raw-packet logs.
+//! Standalone capture worker. No Tauri, A2Tools process, overlays or uploads.
+//! Raw game-stream recording requires the separate explicit --craft-probe mode.
 //! Parser + capture pipeline reused under GPL-3.0 from taengu/A2Tools-DPS-Meter.
 use std::sync::Arc;
 use std::time::{SystemTime, UNIX_EPOCH};
@@ -24,8 +25,8 @@ mod platform {
     pub mod window_detector;
     pub mod pcap;
 }
-// Keep the upstream dispatcher intact; these sinks intentionally retain nothing.
-mod logging { pub mod logger { pub fn log_packet(_: &crate::capture::captured_payload::CapturedPayload) {} } }
+// Only explicit --craft-probe enables a local diagnostic sink.
+mod logging { pub mod logger { pub fn log_packet(cap: &crate::capture::captured_payload::CapturedPayload) { crate::craft_probe::record_stream(cap); } } }
 mod share { pub mod ring { pub fn record(_: &crate::capture::captured_payload::CapturedPayload) {} } }
 
 fn now_ms() -> i64 { SystemTime::now().duration_since(UNIX_EPOCH).unwrap_or_default().as_millis() as i64 }

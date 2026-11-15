@@ -30,7 +30,7 @@ jobs:
       - name: Build and test
         shell: pwsh
         run: ./build.ps1 -PackageRelease -PublicRelease
-      - name: Package optional crafting metadata diagnostic
+      - name: Package optional full crafting diagnostic
         shell: pwsh
         run: |
           $folder = 'dist/crafting-diagnostic'
