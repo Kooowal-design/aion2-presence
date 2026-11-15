@@ -1,6 +1,6 @@
-# Workstation crafting: evidence and limits
+# Crafting: evidence and limits
 
-Beta.10 adds experimental workstation activity detection. The implementation was
+Beta.10 adds experimental crafting activity detection. The implementation was
 replayed against a private Global capture: 13 potion attempts and 6 cooking attempts.
 All 19 private detail frames were immediately followed by a matching visible start.
 There were 18 results: potion cancellation and a naturally completed three-item
@@ -26,7 +26,7 @@ After installing beta.10, the tester confirmed on 2026-11-15 that the Crafting s
 Recipes are parsed as varints; no per-item list or recipe-specific timer is used.
 Profession values 1–5 are accepted, but only alchemy/cooking (4/5) were in this
 capture. Other professions, unusually slow attempts exceeding 60 seconds and
-crowded-workstation attribution still need live validation. This is not a claim
+attribution among nearby crafters still need live validation. This is not a claim
 that every recipe and profession was tested.
 
 ## Replay without live collection

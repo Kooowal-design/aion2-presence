@@ -46,7 +46,7 @@ A session stops after 20 minutes or 128 MiB of trace data, or on a recording err
 Limits and errors are explicit in the report; the helper checks liveness during timed
 steps and before/after input prompts. This tool is passive and does not click in the game.
 
-This is a diagnostic package, separate from the experimental workstation detector
+This is a diagnostic package, separate from the experimental crafting detector
 introduced in beta.10. Complete bytes let us revisit unknown fields and replay parsing
 without collecting the same missing payload again. Potion and food traces share a
 lifecycle; no per-item configuration is required. They cannot prove every profession

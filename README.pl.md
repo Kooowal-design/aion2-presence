@@ -20,7 +20,7 @@ Działa w tle, odczytując informacje o Twojej postaci przez Npcap i aktualizuj�
 | Walka z rozpoznanym bossem w dungeonie | `Nazwa dungeona (poziom trudności) · Fighting Nazwa bossa` |
 | Walka z rozpoznanym bossem poza dungeonem | `Fighting Nazwa bossa` |
 | Zbieranie surowców | `Gathering` |
-| Crafting przy stanowisku | `Crafting` |
+| Crafting | `Crafting` |
 | Konkurencja Shugo — eksperymentalnie, 9 konkurencji obu frakcji | `Shugo Festival · Defend Shugo Merchants` |
 | Brak rozpoznanej aktywności | `In game` |
 
@@ -56,7 +56,7 @@ Uruchom tylko jedną aplikację wysyłającą status AION 2 do Discorda, aby sta
 
 - Nazwa własnej postaci, klasa, level, CP i GS, gdy gra dostarczy dane.
 - Podczas walki: rozpoznany dungeon, tryb i boss. Po walce sam dungeon; poza rozpoznaną instancją `In game`.
-- Zbieranie i crafting przy stanowisku, w tym automatyczne serie.
+- Zbieranie i crafting, w tym automatyczne serie.
 - Zachowanie pełniejszych statystyk w karcie profilu i podpowiedzi obrazu.
 - Usunięcie statusu po zamknięciu gry, utracie silnika lub wyłączeniu aplikacji.
 - Chowanie okna do zasobnika. Autostart z Windows jest opcjonalny.
@@ -69,7 +69,7 @@ Crafting włącza się po rozpoczęciu wytwarzania i utrzymuje przez automatyczn
 
 Eksperymentalna obsługa Shugo rozpoznaje dziewięć konkurencji na mapach Elyosów i Asmodian: Jump Jump, Mysterious Track, Odyle Flight Frenzy, Defend Shugo Merchants, Not This Tile?, Wraith Evasion, Hidden Lugi, Goldrin's Treasure oraz Up! Up! Up! Status zawiera nazwę konkurencji, po rozpoznaniu jej mapy lub aktywnego runu. Sam harmonogram nie uruchamia statusu. Termin runu jest ograniczony do 20 minut; bez terminu status trwa do 10 minut, a sam odczyt mapy daje maksymalnie 20 minut. Koniec runu lub wyjście czyści status. Obsługa wymaga dalszego sprawdzenia w grze; szczegóły i źródła: [wykrywanie Shugo](docs/SHUGO.md).
 
-Poza rozpoznanym dungeonem/bossem, zbieraniem, craftingiem przy stanowisku i tym runem Shugo status to `In game`. **Nie rozpoznajemy lokacji otwartego świata ani AFK.**
+Poza rozpoznanym dungeonem/bossem, zbieraniem, craftingiem i tym runem Shugo status to `In game`. **Nie rozpoznajemy lokacji otwartego świata ani AFK.**
 
 Discord dostaje `status_display_type: 2` (Details), co zgodnie z dokumentacją wybiera szczegóły jako tekst na liście członków. Klient Discorda decyduje o miejscu wyświetlania i skracaniu długiego tekstu. Lokalny podgląd nie jest dowodem, że inny użytkownik widzi cały tekst. Ten efekt wymaga sprawdzenia w realnym Discordzie.
 
