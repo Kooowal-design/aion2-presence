@@ -3,6 +3,10 @@ name: Build Windows app
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - 'README*.md'
+      - 'docs/**'
+      - '.github/workflows/release-notes.yml'
   workflow_dispatch:
 
 permissions:
