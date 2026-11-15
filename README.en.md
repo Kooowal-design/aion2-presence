@@ -63,9 +63,11 @@ The installer and app support **English / Polski**. Use the language selector to
 
 Gathering is detected from start/result messages and expires after 15/8 seconds without another event. Boss combat takes priority.
 
+Experimental workstation crafting is recognized from private attempt details followed by a matching start. Potion and food traces use the same lifecycle; no recipe list is required. Results retain the status for 2.5 seconds between automatic attempts; an attempt with no result expires after 60 seconds. Substance Morph is excluded. Other professions still need live validation. See [crafting evidence and limits](docs/CRAFTING.md).
+
 Experimental Shugo support identifies nine competitions on Elyos and Asmodian maps: Jump Jump, Mysterious Track, Odyle Flight Frenzy, Defend Shugo Merchants, Not This Tile?, Wraith Evasion, Hidden Lugi, Goldrin's Treasure and Up! Up! Up! The status includes the competition name after a known venue map or active run is received. Schedule broadcasts alone do not activate it. Run deadlines are capped at 20 minutes; without a deadline the lease is 10 minutes, and map-only detection lasts at most 20 minutes. Completion or departure clears the event. Live verification is still needed; see [Shugo detection and sources](docs/SHUGO.md).
 
-Outside recognized dungeon/boss activity, gathering or that confirmed Shugo run, the status is `In game`. Open-world locations and **AFK are not detected**.
+Outside recognized dungeon/boss activity, gathering, workstation crafting or that confirmed Shugo run, the status is `In game`. Open-world locations and **AFK are not detected**.
 
 Discord controls placement and truncation of long text, as well as which activity is shown when several are active. The local preview is illustrative; check the actual display in Discord.
 
@@ -85,7 +87,7 @@ Versions before 0.2.0-beta.5 need one manual update to receive this feature. Fil
 
 ## Privacy and data
 
-There is no app server, account, telemetry, combat-log upload or raw-packet recording. The parser reads traffic through Npcap, and the app passes selected information to the local Discord client. Visibility follows your Discord activity-sharing settings. Unavailable fields are omitted.
+There is no app server, account, telemetry or combat-log upload. Normal Presence does not record raw packets. The separate, explicitly started crafting diagnostic records full incoming game-stream data locally, which may include character information and chat; it never uploads it automatically. See [diagnostic scope and instructions](docs/CRAFTING-DIAGNOSTICS.md). The parser reads traffic through Npcap, and the app passes selected information to the local Discord client. Visibility follows your Discord activity-sharing settings. Unavailable fields are omitted.
 
 Update checks contact GitHub at startup and every six hours; downloads start only when you request them. No character data, settings or logs are sent. GitHub receives standard connection information such as your IP address.
 

@@ -9,6 +9,7 @@ use a2tools_dps_meter_lib::{combat::data_storage::DataStorage, i18n::lookup::{Np
 mod activity;
 mod shugo;
 mod craft_probe;
+mod workstation;
 
 pub use a2tools_dps_meter_lib::{clock, i18n};
 mod capture {
@@ -70,6 +71,13 @@ fn snapshot(storage: &DataStorage, npcs: &NpcLookup, dungeons: &Value, servers: 
 async fn main() {
     tracing_subscriber::fmt().with_writer(std::io::stderr).with_env_filter("warn").without_time().with_ansi(false).init();
     let args: Vec<String> = std::env::args().collect();
+    if args.len()==3 && args[1]=="--replay-crafting" {
+        match workstation::replay(std::path::Path::new(&args[2])) {
+            Ok(result)=>println!("{result}"),
+            Err(error)=>{eprintln!("Replay failed: {error}");std::process::exit(1);}
+        }
+        return;
+    }
     if args.get(1).is_some_and(|a| a == "--craft-probe") {
         if args.len() != 4 {
             eprintln!("Usage: aion-presence-engine --craft-probe OUTPUT.json PHASE.txt");

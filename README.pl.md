@@ -63,9 +63,11 @@ Instalator i aplikacja obsługują **English / Polski**. Wybór języka jest zap
 
 Zbieranie jest rozpoznawane po komunikatach rozpoczęcia i wyniku; status wygasa po 15/8 sekundach bez kolejnego zdarzenia. Walka z bossem ma pierwszeństwo.
 
+Eksperymentalny crafting przy stanowisku wymaga prywatnych danych próby i pasującego startu. Mikstury i jedzenie korzystają z tego samego schematu, bez listy przepisów. Po wyniku status utrzymuje się przez 2,5 sekundy pomiędzy próbami automatycznej serii; brak wyniku wygasza próbę po 60 sekundach. Substance Morph jest pomijany. Inne profesje wymagają sprawdzenia w grze. Zobacz [podstawy i ograniczenia](docs/CRAFTING.md).
+
 Eksperymentalna obsługa Shugo rozpoznaje dziewięć konkurencji na mapach Elyosów i Asmodian: Jump Jump, Mysterious Track, Odyle Flight Frenzy, Defend Shugo Merchants, Not This Tile?, Wraith Evasion, Hidden Lugi, Goldrin's Treasure oraz Up! Up! Up! Status zawiera nazwę konkurencji, po rozpoznaniu jej mapy lub aktywnego runu. Sam harmonogram nie uruchamia statusu. Termin runu jest ograniczony do 20 minut; bez terminu status trwa do 10 minut, a sam odczyt mapy daje maksymalnie 20 minut. Koniec runu lub wyjście czyści status. Obsługa wymaga dalszego sprawdzenia w grze; szczegóły i źródła: [wykrywanie Shugo](docs/SHUGO.md).
 
-Poza rozpoznanym dungeonem/bossem, zbieraniem i tym runem Shugo status to `In game`. **Nie rozpoznajemy lokacji otwartego świata ani AFK.**
+Poza rozpoznanym dungeonem/bossem, zbieraniem, craftingiem przy stanowisku i tym runem Shugo status to `In game`. **Nie rozpoznajemy lokacji otwartego świata ani AFK.**
 
 Discord dostaje `status_display_type: 2` (Details), co zgodnie z dokumentacją wybiera szczegóły jako tekst na liście członków. Klient Discorda decyduje o miejscu wyświetlania i skracaniu długiego tekstu. Lokalny podgląd nie jest dowodem, że inny użytkownik widzi cały tekst. Ten efekt wymaga sprawdzenia w realnym Discordzie.
 
@@ -85,7 +87,7 @@ Wersje starsze niż 0.2.0-beta.5 wymagają jednorazowej ręcznej aktualizacji, a
 
 ## Prywatność i dane
 
-Brak serwera aplikacji, konta, telemetryki, uploadów i zapisu surowych pakietów. Parser czyta ruch przez Npcap, a aplikacja przekazuje wybrane informacje do lokalnego klienta Discorda. Udostępnione pola są widoczne dla odbiorców zgodnie z ustawieniami aktywności Discorda. Brakujące pola są pomijane.
+Brak serwera aplikacji, konta, telemetryki i automatycznych uploadów. Zwykła aplikacja nie zapisuje surowych pakietów. Osobno uruchamiana diagnostyka craftingu zapisuje pełne przychodzące dane gry lokalnie; mogą one zawierać dane postaci i czat. Niczego nie wysyła automatycznie. Zobacz [zakres diagnostyki](docs/CRAFTING-DIAGNOSTICS.md). Parser czyta ruch przez Npcap, a aplikacja przekazuje wybrane informacje do lokalnego klienta Discorda. Brakujące pola są pomijane.
 
 Sprawdzanie aktualizacji łączy się z GitHubem przy starcie i co sześć godzin. Pobieranie uruchamiasz samodzielnie. Nie wysyłamy danych postaci, ustawień ani logów; GitHub otrzymuje standardowe informacje o połączeniu, takie jak adres IP.
 

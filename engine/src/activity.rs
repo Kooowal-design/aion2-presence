@@ -7,6 +7,7 @@ pub struct Activity {
     action: Option<(&'static str, i64)>,
     festival: Option<(u32, &'static str, i64)>,
     ended_festival: Option<u32>,
+    workstation: crate::workstation::Workstation,
 }
 
 impl Activity {
@@ -19,6 +20,7 @@ impl Activity {
     fn leave_location(&mut self) {
         self.map = None;
         self.action = None;
+        self.workstation.clear();
         self.festival = None;
     }
 
@@ -28,6 +30,8 @@ impl Activity {
         let o = prefix.length as usize;
         let Some(op) = packet.get(o..o + 2) else { return; };
         let body = &packet[o + 2..];
+        self.workstation.observe(op,body,now);
+        if self.workstation.is_active(now) { self.action=None; }
         if server_move_port(packet).is_some()
             || (op == [0x23, 0x36] && body.first() == Some(&0)) {
             self.leave_location();
@@ -36,6 +40,7 @@ impl Activity {
             let map = i32::from_le_bytes(body[4..8].try_into().unwrap());
             if self.map != Some(map) {
                 self.action = None;
+                self.workstation.clear();
                 self.festival = match crate::shugo::game(map) {
                     Some((id, name)) if self.ended_festival != Some(id) => Some((id, name, now + 20 * 60_000)),
                     _ => None,
@@ -69,17 +74,14 @@ impl Activity {
         }
         if let Some(gather) = loot::gather(packet) {
             match gather {
-                Gather::Started { .. } => self.action = Some(("Gathering", now + 15_000)),
+                Gather::Started { .. } => { self.workstation.clear(); self.action = Some(("Gathering", now + 15_000)); }
                 Gather::Done { .. } => self.action = Some(("Gathering", now + 8_000)),
                 Gather::Refused { .. } => {
                     if self.action.is_some_and(|(kind, _)| kind == "Gathering") { self.action = None; }
                 }
             }
         }
-        // 8B 8D is observed for Substance Morph (including material conversions),
-        // not evidence of an ongoing workstation craft. Do not turn that instant
-        // operation into a 20-second Crafting status. Workstation start/result/
-        // cancel messages still need a verified fixture before enabling crafting.
+        // Substance Morph (8B 8D) is deliberately excluded from workstation state.
     }
 
     pub fn describe(&self, base: &str, dungeon: i64, now: i64) -> String {
@@ -93,7 +95,8 @@ impl Activity {
         let place = if dungeon > 0 && base != "In game" { Some(base) }
             else if festival.is_some() { festival.as_deref() }
             else { None };
-        let action = self.action.filter(|(_, until)| now < *until).map(|(kind, _)| kind);
+        let action = if self.workstation.is_active(now) { Some("Crafting") }
+            else { self.action.filter(|(_, until)| now < *until).map(|(kind, _)| kind) };
         match (place, action) {
             (Some(place), Some(action)) => format!("{place} · {action}"),
             (Some(place), None) => place.into(),
@@ -135,6 +138,22 @@ mod tests {
         assert_eq!(s.describe("In game", 0, 16_000), "In game");
         s.observe(&packet([0x31,0x8D], &[4,0x3a,16,0,0,0,0]), 2_000);
         assert_eq!(s.describe("In game", 0, 2_001), "In game");
+    }
+    #[test]
+    fn workstation_crafting_composes_with_combat_and_clears_on_map_change() {
+        let mut s=Activity::default();
+        let mut details=vec![0,5,123]; details.extend([0;30]);
+        s.observe(&packet([0x6f,0x8d],&details),1000);
+        s.observe(&packet([0x72,0x8d],&[15,123,4]),1000);
+        assert_eq!(s.describe("In game",0,1001),"Crafting");
+        assert_eq!(s.describe("Fighting Boss",0,1001),"Fighting Boss");
+        s.observe(&packet([0x71,0x8d],&[0,5,123,0]),2000);
+        assert_eq!(s.describe("In game",0,4499),"Crafting");
+        assert_eq!(s.describe("In game",0,4500),"In game");
+        s.observe(&packet([0x6f,0x8d],&details),5000);
+        s.observe(&packet([0x72,0x8d],&[15,123,4]),5000);
+        map(&mut s,1010);
+        assert_eq!(s.describe("In game",0,5001),"In game");
     }
     #[test]
     fn morph_results_and_recipe_windows_never_activate_crafting() {

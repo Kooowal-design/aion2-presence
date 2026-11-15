@@ -9,7 +9,12 @@ $taskWorker = $null
 $taskFailure = $null
 function Read-Status {
     for ($taskRetry=0; $taskRetry -lt 5; $taskRetry++) {
-        try { return (Get-Content -LiteralPath $taskReport -Raw | ConvertFrom-Json) }
+        try {
+            $taskStream = [IO.File]::Open($taskReport, [IO.FileMode]::Open, [IO.FileAccess]::Read, ([IO.FileShare]::ReadWrite -bor [IO.FileShare]::Delete))
+            $taskReader = [IO.StreamReader]::new($taskStream)
+            try { return ($taskReader.ReadToEnd() | ConvertFrom-Json) }
+            finally { $taskReader.Dispose() }
+        }
         catch { Start-Sleep -Milliseconds 150 }
     }
     throw 'Brak poprawnego raportu silnika. Zapis diagnostyczny zostanie zachowany.'

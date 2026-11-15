@@ -85,7 +85,17 @@ fn phase(text: &str) -> &str {
 fn checkpoint(path: &std::path::Path, value: &Value) -> std::io::Result<()> {
     let tmp = path.with_extension("tmp");
     std::fs::write(&tmp, serde_json::to_vec_pretty(value)?)?;
-    std::fs::rename(tmp,path)
+    // PowerShell/antivirus can briefly open the previous summary without
+    // FILE_SHARE_DELETE. A summary reader must not kill the trace recorder.
+    for attempt in 0..80 {
+        match std::fs::rename(&tmp,path) {
+            Ok(()) => return Ok(()),
+            Err(error) if matches!(error.raw_os_error(),Some(5 | 32 | 33)) && attempt < 79 =>
+                std::thread::sleep(std::time::Duration::from_millis(25)),
+            Err(error) => return Err(error),
+        }
+    }
+    unreachable!()
 }
 pub async fn run(output: PathBuf, marker: PathBuf) -> Result<(), Box<dyn std::error::Error>> {
     use crate::capture::{combat_port_detector::CombatPortDetector,pcap_capturer::PcapCapturer};
@@ -202,6 +212,26 @@ mod tests {
         checkpoint(&path,&json!({"frames":1000})).unwrap();
         checkpoint(&path,&json!({"frames":1})).unwrap();
         assert_eq!(std::fs::read_to_string(&path).unwrap(),"{\n  \"frames\": 1\n}");
+        std::fs::remove_file(path).unwrap();
+    }
+    #[test]
+    #[cfg(windows)]
+    fn checkpoint_survives_a_reader_blocking_windows_file_replacement() {
+        use std::os::windows::fs::OpenOptionsExt;
+        let path=std::env::temp_dir().join(format!("craft-reader-lock-{}.json",std::process::id()));
+        checkpoint(&path,&json!({"frames":1})).unwrap();
+        let reader=std::fs::OpenOptions::new().read(true).share_mode(1).open(&path).unwrap();
+        let tmp=path.with_extension("tmp");
+        std::fs::write(&tmp,b"{}").unwrap();
+        let blocked=std::fs::rename(&tmp,&path).unwrap_err();
+        assert!(matches!(blocked.raw_os_error(),Some(5 | 32 | 33)),"{blocked}");
+        let release=std::thread::spawn(move || {
+            std::thread::sleep(std::time::Duration::from_millis(150)); drop(reader);
+        });
+        checkpoint(&path,&json!({"frames":2})).unwrap();
+        release.join().unwrap();
+        let value:Value=serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
+        assert_eq!(value["frames"],2);
         std::fs::remove_file(path).unwrap();
     }
 }
