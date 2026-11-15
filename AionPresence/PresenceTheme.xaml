@@ -1,0 +1,158 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+        <BooleanToVisibilityConverter x:Key="VisibleIf"/>
+        <SolidColorBrush x:Key="Ink" Color="#ECF3FA"/>
+        <SolidColorBrush x:Key="Muted" Color="#C4D6E5"/>
+        <SolidColorBrush x:Key="Gold" Color="#F1D48D"/>
+        <LinearGradientBrush x:Key="Glass" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#ED203E59" Offset="0"/><GradientStop Color="#E30C2035" Offset=".7"/><GradientStop Color="#DF123048" Offset="1"/>
+        </LinearGradientBrush>
+        <LinearGradientBrush x:Key="GlassEdge" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#9A81BDDE" Offset="0"/><GradientStop Color="#454D8CAF" Offset=".6"/><GradientStop Color="#7574B2D1" Offset="1"/>
+        </LinearGradientBrush>
+        <LinearGradientBrush x:Key="ButtonFill" StartPoint="0,0" EndPoint="0,1">
+            <GradientStop Color="#314E68"/><GradientStop Color="#12273C" Offset="1"/>
+        </LinearGradientBrush>
+        <LinearGradientBrush x:Key="GoldFill" StartPoint="0,0" EndPoint="0,1">
+            <GradientStop Color="#FBE6AB"/><GradientStop Color="#E3B952" Offset="1"/>
+        </LinearGradientBrush>
+        <LinearGradientBrush x:Key="GoldGlass" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#D2675A38"/><GradientStop Color="#ED1F2B30" Offset=".55"/><GradientStop Color="#D95A492C" Offset="1"/>
+        </LinearGradientBrush>
+        <LinearGradientBrush x:Key="GreenGlass" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#C6206254"/><GradientStop Color="#EB102E35" Offset=".65"/><GradientStop Color="#C4154A48" Offset="1"/>
+        </LinearGradientBrush>
+        <LinearGradientBrush x:Key="CyanFill" StartPoint="0,0" EndPoint="1,0">
+            <GradientStop Color="#06A4BE"/><GradientStop Color="#4DDFE4" Offset="1"/>
+        </LinearGradientBrush>
+        <Style TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource Ink}"/><Setter Property="FontSize" Value="18"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style x:Key="SectionLabel" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="16"/><Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#B7D0E3"/><Setter Property="Margin" Value="0,0,0,12"/>
+        </Style>
+        <Style x:Key="Card" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource Glass}"/><Setter Property="BorderBrush" Value="{StaticResource GlassEdge}"/>
+            <Setter Property="BorderThickness" Value="1"/><Setter Property="CornerRadius" Value="14"/><Setter Property="Padding" Value="20,16"/>
+            <Setter Property="Effect"><Setter.Value><DropShadowEffect Color="#001A2B" BlurRadius="18" ShadowDepth="2" Opacity=".28"/></Setter.Value></Setter>
+        </Style>
+        <Style x:Key="ActionButton" TargetType="Button">
+            <Setter Property="Background" Value="{StaticResource ButtonFill}"/><Setter Property="Foreground" Value="{StaticResource Ink}"/>
+            <Setter Property="BorderBrush" Value="#719BB9"/><Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="16,9"/><Setter Property="FontSize" Value="18"/><Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="MinHeight" Value="36"/><Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="Button">
+                <Border x:Name="ButtonEdge" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="8" Padding="{TemplateBinding Padding}">
+                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" RecognizesAccessKey="True"/>
+                </Border>
+                <ControlTemplate.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="ButtonEdge" Property="BorderBrush" Value="#B0DFF2"/><Setter TargetName="ButtonEdge" Property="Opacity" Value=".9"/></Trigger>
+                    <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="ButtonEdge" Property="BorderBrush" Value="#F1D48D"/></Trigger>
+                    <Trigger Property="IsPressed" Value="True"><Setter TargetName="ButtonEdge" Property="Opacity" Value=".72"/></Trigger>
+                    <Trigger Property="IsEnabled" Value="False"><Setter TargetName="ButtonEdge" Property="Opacity" Value=".55"/></Trigger>
+                </ControlTemplate.Triggers>
+            </ControlTemplate></Setter.Value></Setter>
+        </Style>
+        <Style x:Key="NavButton" TargetType="RadioButton">
+            <Setter Property="Foreground" Value="#C4D7E6"/><Setter Property="Cursor" Value="Hand"/><Setter Property="FontSize" Value="18"/>
+            <Setter Property="Margin" Value="10,4"/><Setter Property="MinHeight" Value="44"/><Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="RadioButton">
+                <Border x:Name="NavEdge" Background="Transparent" CornerRadius="9" BorderThickness="1" BorderBrush="Transparent" Padding="12,10">
+                    <ContentPresenter VerticalAlignment="Center"/>
+                </Border>
+                <ControlTemplate.Triggers>
+                    <Trigger Property="IsChecked" Value="True"><Setter TargetName="NavEdge" Property="Background" Value="{StaticResource GoldGlass}"/>
+                        <Setter TargetName="NavEdge" Property="BorderBrush" Value="#F2D28A"/><Setter Property="Foreground" Value="#FFF1CC"/>
+                        <Setter TargetName="NavEdge" Property="Effect"><Setter.Value><DropShadowEffect Color="#D6AE54" BlurRadius="12" ShadowDepth="0" Opacity=".3"/></Setter.Value></Setter>
+                    </Trigger>
+                    <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="NavEdge" Property="BorderBrush" Value="#7594AE"/></Trigger>
+                    <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="NavEdge" Property="BorderBrush" Value="#F2D28A"/></Trigger>
+                </ControlTemplate.Triggers>
+            </ControlTemplate></Setter.Value></Setter>
+        </Style>
+        <Style x:Key="Switch" TargetType="CheckBox">
+            <Setter Property="Foreground" Value="#E7F1F8"/><Setter Property="FontSize" Value="17"/><Setter Property="Cursor" Value="Hand"/><Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="CheckBox">
+                <Border x:Name="FocusBorder" BorderThickness="1" BorderBrush="Transparent" CornerRadius="5" Padding="1,6">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <Grid Width="36" Height="21">
+                            <Border x:Name="Track" CornerRadius="11" Background="#485D70" BorderBrush="#7D94A7" BorderThickness=".8"/>
+                            <Ellipse x:Name="Knob" Width="16" Height="16" Fill="#BFCED8" HorizontalAlignment="Left" Margin="2,0,0,0"/>
+                        </Grid>
+                        <ContentPresenter Margin="8,0,8,0" VerticalAlignment="Center" RecognizesAccessKey="True"/>
+                    </StackPanel>
+                </Border>
+                <ControlTemplate.Triggers>
+                    <Trigger Property="IsChecked" Value="True"><Setter TargetName="Track" Property="Background" Value="{StaticResource CyanFill}"/>
+                        <Setter TargetName="Track" Property="BorderBrush" Value="#79F3F7"/><Setter TargetName="Knob" Property="Fill" Value="#F5FCFF"/>
+                        <Setter TargetName="Knob" Property="Margin" Value="18,0,0,0"/></Trigger>
+                    <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="FocusBorder" Property="BorderBrush" Value="#68D8E4"/></Trigger>
+                    <Trigger Property="IsEnabled" Value="False"><Setter TargetName="FocusBorder" Property="Opacity" Value=".5"/></Trigger>
+                </ControlTemplate.Triggers>
+            </ControlTemplate></Setter.Value></Setter>
+        </Style>
+        <Style x:Key="SmallCheck" TargetType="CheckBox">
+            <Setter Property="Foreground" Value="{StaticResource Muted}"/><Setter Property="FontSize" Value="16"/><Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="CheckBox">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Border x:Name="Box" Width="14" Height="14" CornerRadius="2" BorderBrush="#AEC0CF" BorderThickness="1" Margin="0,0,8,0">
+                        <Path x:Name="Tick" Data="M2,6 L5,9 L10,2" Stroke="White" StrokeThickness="1.8" Visibility="Collapsed" Margin="1"/>
+                    </Border><ContentPresenter VerticalAlignment="Center"/>
+                </StackPanel><ControlTemplate.Triggers><Trigger Property="IsChecked" Value="True"><Setter TargetName="Box" Property="Background" Value="#179BB6"/><Setter TargetName="Tick" Property="Visibility" Value="Visible"/></Trigger></ControlTemplate.Triggers>
+            </ControlTemplate></Setter.Value></Setter>
+        </Style>
+        <Style x:Key="FooterLink" TargetType="Button" BasedOn="{StaticResource ActionButton}">
+            <Setter Property="Background" Value="Transparent"/><Setter Property="BorderThickness" Value="0"/><Setter Property="Foreground" Value="{StaticResource Muted}"/>
+            <Setter Property="Padding" Value="0,8"/><Setter Property="FontSize" Value="16"/><Setter Property="Margin" Value="0,0,17,0"/>
+            <Style.Triggers><Trigger Property="IsMouseOver" Value="True"><Setter Property="Foreground" Value="#F1D48D"/></Trigger></Style.Triggers>
+        </Style>
+        <Style x:Key="ChromeButton" TargetType="Button" BasedOn="{StaticResource ActionButton}">
+            <Setter Property="Width" Value="36"/><Setter Property="MinHeight" Value="26"/><Setter Property="Height" Value="26"/>
+            <Setter Property="Padding" Value="10,7"/><Setter Property="Background" Value="Transparent"/><Setter Property="BorderThickness" Value="0"/>
+        </Style>
+        <Style TargetType="ScrollBar">
+            <Setter Property="Width" Value="7"/><Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="ScrollBar"><Track x:Name="PART_Track" IsDirectionReversed="True">
+                <Track.Thumb><Thumb><Thumb.Template><ControlTemplate TargetType="Thumb"><Border Background="#6D708FA6" CornerRadius="4"/></ControlTemplate></Thumb.Template></Thumb></Track.Thumb>
+            </Track></ControlTemplate></Setter.Value></Setter>
+        </Style>
+        <Style TargetType="ToolTip"><Setter Property="Background" Value="#142C43"/><Setter Property="Foreground" Value="#EEF6FF"/><Setter Property="BorderBrush" Value="#5E89A8"/></Style>
+        <Style TargetType="ContextMenu">
+            <Setter Property="Background" Value="#142A41"/><Setter Property="Foreground" Value="#EEF6FF"/><Setter Property="BorderBrush" Value="#537B99"/>
+            <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="ContextMenu">
+                <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="4">
+                    <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Cycle"/>
+                </Border>
+            </ControlTemplate></Setter.Value></Setter>
+        </Style>
+    <!-- Vector flags do not depend on Windows emoji font support. -->
+    <DrawingImage x:Key="FlagPL"><DrawingImage.Drawing><DrawingGroup>
+        <GeometryDrawing Brush="#FFFFFF" Geometry="M0,0 H30 V10 H0 Z"/>
+        <GeometryDrawing Brush="#DC143C" Geometry="M0,10 H30 V20 H0 Z"/>
+    </DrawingGroup></DrawingImage.Drawing></DrawingImage>
+    <DrawingImage x:Key="FlagUK"><DrawingImage.Drawing><DrawingGroup ClipGeometry="M0,0 H30 V20 H0 Z">
+        <GeometryDrawing Brush="#183575" Geometry="M0,0 H30 V20 H0 Z"/>
+        <GeometryDrawing Geometry="M0,0 L30,20 M30,0 L0,20"><GeometryDrawing.Pen><Pen Brush="White" Thickness="5"/></GeometryDrawing.Pen></GeometryDrawing>
+        <GeometryDrawing Geometry="M0,0 L30,20 M30,0 L0,20"><GeometryDrawing.Pen><Pen Brush="#CF2541" Thickness="2"/></GeometryDrawing.Pen></GeometryDrawing>
+        <GeometryDrawing Brush="White" Geometry="F1 M12,0 H18 V20 H12 Z M0,7 H30 V13 H0 Z"/>
+        <GeometryDrawing Brush="#CF2541" Geometry="F1 M13,0 H17 V20 H13 Z M0,8 H30 V12 H0 Z"/>
+    </DrawingGroup></DrawingImage.Drawing></DrawingImage>
+    <Style TargetType="MenuItem">
+        <Setter Property="Foreground" Value="#ECF3FA"/><Setter Property="FontSize" Value="16"/>
+        <Setter Property="Padding" Value="12,9"/><Setter Property="MinWidth" Value="150"/>
+        <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="MenuItem">
+            <Border x:Name="MenuEdge" Background="Transparent" BorderBrush="Transparent" BorderThickness="1" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="32"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                    <ContentPresenter ContentSource="Icon" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                    <ContentPresenter Grid.Column="1" ContentSource="Header" VerticalAlignment="Center" RecognizesAccessKey="True"/>
+                </Grid>
+            </Border>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsHighlighted" Value="True"><Setter TargetName="MenuEdge" Property="Background" Value="#315471"/><Setter TargetName="MenuEdge" Property="BorderBrush" Value="#77C4D5"/></Trigger>
+                <Trigger Property="IsEnabled" Value="False"><Setter TargetName="MenuEdge" Property="Opacity" Value=".5"/></Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate></Setter.Value></Setter>
+    </Style>
+</ResourceDictionary>

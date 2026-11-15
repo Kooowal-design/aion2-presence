@@ -1,29 +1,33 @@
 Public beta for Windows · English / Polski
 
-## New in 0.2.0-beta.8
+## New in 0.2.0-beta.9
 
-- Replaced the optional crafting metadata probe with a full incoming game-stream diagnostic.
-- Added guided potion and food tests: recipe window, automatic batch, cancellation and natural completion.
-- Added a reception preflight, millisecond ordering, complete frame/stream bytes, local-player ID, per-phase counts, error logs and a single result ZIP.
-- Normal Presence activities and gathering detection are unchanged. This release does not claim working workstation-crafting detection.
+- Rebuilt setup with the same aurora background, glass panels, rounded controls and gold action button as the app.
+- Added vector Polish and UK flags to the selected language and language menus in both setup and the app. Flags do not depend on Windows emoji support.
+- Matched the entire language popup to the dark theme, including hover and keyboard focus.
+- Added a matching installation-complete screen that keeps the installation folder visible.
+- Existing installation location, shortcuts, settings and update behavior are retained.
 
-## ShadowPC diagnostic
-
-Download **Aion2Presence-Crafting-Diagnostic.zip** on ShadowPC, extract it and run **Start-Diagnostic.cmd**.
-Exit normal Presence first; keep the game running. Prepare potion and food materials.
-The helper explains each step and produces a local **craft-diagnostic-....zip**.
-
-**The diagnostic contains full incoming game data, potentially including character information and chat.**
-It never uploads automatically. Share the result privately in the support chat, not in a public GitHub issue.
-Limits are 20 minutes / 128 MiB. Normal Presence does not record this trace.
+Download **Aion2Presence-Setup.exe**, or select **Download and install** in the app.
+Exit the previous copy from its system tray menu before installing manually.
 
 ## Polski
 
-Osobna paczka diagnostyczna prowadzi przez mikstury i jedzenie: otwarcie przepisu, automatyczna seria,
-anulowanie i naturalny koniec. Zapisuje pelne komunikaty gry i tworzy jeden ZIP do analizy.
-Moze zawierac dane postaci i czat; nie wysyla nic automatycznie. Nie publikuj raportu na GitHub.
-Zwykla aplikacja, zbieractwo i pozostale aktywnosci dzialaja bez zmian.
-Nie trzeba instalowac nowej wersji aplikacji, aby uruchomic osobna diagnostyke.
+Instalator korzysta teraz z tego samego motywu co aplikacja: tła z zorzą, szklanych paneli
+i złotego przycisku. Flagi Polski i Wielkiej Brytanii są widoczne przy wybranym języku
+i w ciemnym menu wyboru, zarówno w aplikacji, jak i instalatorze.
+Ekran zakończenia instalacji ma spójny wygląd i pokazuje folder instalacji.
+
+Pobierz **Aion2Presence-Setup.exe** lub wybierz **Pobierz i zainstaluj** w aplikacji.
+Przed instalacją ręczną zakończ poprzednią kopię z menu przy zegarku.
+Folder instalacji, ustawienia i skróty zostają zachowane.
+
+## Optional crafting diagnostic
+
+The separate **Aion2Presence-Crafting-Diagnostic.zip** continues to provide the guided
+potion and food diagnostic introduced in beta.8. It records complete incoming game data
+locally and may include character information and chat. No automatic upload occurs.
+Normal Presence does not enable recording. Workstation crafting detection is not yet claimed.
 
 Npcap, AION 2 and Discord desktop are required for normal Presence on the same computer.
 Matching source, notices and SHA-256 checksums are attached. The Windows executable remains unsigned.

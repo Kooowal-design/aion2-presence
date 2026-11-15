@@ -65,6 +65,7 @@ public partial class MainWindow : System.Windows.Window, INotifyPropertyChanged
     public bool IsPreview => preview;
     public string VersionText => "v" + Forms.Application.ProductVersion.Split('+')[0];
     public string LanguageCode => UiLanguage.Language == "pl" ? "PL" : "EN";
+    public ImageSource LanguageFlag => (ImageSource)FindResource(UiLanguage.Language == "pl" ? "FlagPL" : "FlagUK");
     public string HomeText => L("Start");
     public string HelpText => IsHelp ? L("Start") : L("Pomoc");
     public string PreviewLabel => L("PODGLĄD LOKALNY\nFikcyjne dane");

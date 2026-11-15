@@ -15,7 +15,7 @@ internal static class Program
             return;
         }
         if (args.Contains("--install") || IsInstaller(Environment.ProcessPath ?? "")) {
-            Application.Run(new InstallForm());
+            new System.Windows.Application { ShutdownMode = System.Windows.ShutdownMode.OnMainWindowClose }.Run(new InstallWindow());
             return;
         }
         if (args.Contains("--self-test")) {
@@ -33,13 +33,11 @@ internal static class Program
                 if (args.Contains("--small-preview")) { main.Width = 960; main.Height = 720; }
                 main.Show(); main.RenderPreview(args[1], args.Contains("--scale-150") ? 1.5 : 1); main.Close(); return;
             }
-            using Form form = new InstallForm();
-            form.StartPosition = FormStartPosition.Manual;
-            form.Location = new Point(-20000, -20000);
-            form.Show(); Application.DoEvents();
-            using var bitmap = new Bitmap(form.Width, form.Height);
-            form.DrawToBitmap(bitmap, new Rectangle(Point.Empty, form.Size));
-            bitmap.Save(args[1]);
+            var setup = new InstallWindow(preview: true) { WindowStartupLocation = System.Windows.WindowStartupLocation.Manual, Left = -20000, Top = -20000, ShowInTaskbar = false, ShowActivated = false };
+            if (args.Contains("--installed")) setup.ShowInstalledPreview();
+            setup.Show(); setup.RenderPreview(args[1], args.Contains("--scale-150") ? 1.5 : 1);
+            if (args.Contains("--language-menu")) setup.RenderLanguageMenuPreview(Path.ChangeExtension(args[1], ".menu.png"));
+            setup.Close();
             return;
         }
         if (args.Contains("--ui-preview") || (IsDesignPreview(Environment.ProcessPath ?? "") && !args.Contains("--live-preview"))) {
