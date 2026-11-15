@@ -8,7 +8,7 @@
 
 A free, open-source Windows app that shows your character stats and what you are doing in game. Runs independently in the background — no running DPS meter, Discord token or developer setup required.
 
-**[Download for Windows](https://github.com/Kooowal-design/aion2-presence/releases/tag/v0.2.0-beta.11)** · **[All versions](https://github.com/Kooowal-design/aion2-presence/tags)** · **[Report a bug](https://github.com/Kooowal-design/aion2-presence/issues/new/choose)**
+**[Download for Windows](https://github.com/Kooowal-design/aion2-presence/releases/tag/v0.2.0-beta.12)** · **[All versions](https://github.com/Kooowal-design/aion2-presence/tags)** · **[Report a bug](https://github.com/Kooowal-design/aion2-presence/issues/new/choose)**
 
 ## How it looks on Discord
 
@@ -31,7 +31,7 @@ Keep control of every field: **character name, class, CP, GS, level and activity
 | --- | --- |
 | **Auto — default** | Selected stats during normal play; only the recognized activity while it is active. |
 | **Selected stats** | Your chosen character fields, even during an activity. |
-| **Activity only** | The current activity, or `AION 2` when no activity is recognized. |
+| **Activity only** | The current activity, or `AION 2 - In game` when no activity is recognized. |
 | **AION 2 only** | Just `AION 2`; selected details remain in your profile. |
 
 ![Automatic mode: selected stats, then activity, then selected stats again](docs/discord-auto-v11.png)
@@ -58,7 +58,7 @@ A small badge in the corner of the **class artwork inside the activity card** id
 | Gathering resources | `Gathering` |
 | Crafting, including automatic batches | `Crafting` |
 | Shugo competition — experimental, both factions | `Shugo Festival · Defend Shugo Merchants` |
-| No recognized activity | `AION 2`, or your selected stats in Auto mode |
+| No recognized activity | `AION 2 - In game`, or your selected stats on the member list in Auto mode |
 
 Dungeon and boss names come from recognized game data. **Boss detection depends on the NPC data bundled with the app and the combat data received from the game. Some bosses may not be recognized.** Support includes recognized open-world bosses as well as dungeon bosses.
 
@@ -72,7 +72,7 @@ Boss combat takes priority over gathering and crafting. **AFK and open-world loc
 
 ## Install
 
-1. Open the **[current release](https://github.com/Kooowal-design/aion2-presence/releases/tag/v0.2.0-beta.11)** and download **Aion2Presence-Setup.exe**. Browse **[all versions](https://github.com/Kooowal-design/aion2-presence/tags)** through Tags; use **Downloads** beside a version to open its release assets.
+1. Open the **[current release](https://github.com/Kooowal-design/aion2-presence/releases/tag/v0.2.0-beta.12)** and download **Aion2Presence-Setup.exe**. Browse **[all versions](https://github.com/Kooowal-design/aion2-presence/tags)** through Tags; use **Downloads** beside a version to open its release assets.
 2. If updating manually, exit the running copy from its system tray menu. Run the installer, choose a folder and select **Install**.
 3. Launch **AION2 Presence** from its desktop shortcut or the Windows Start menu.
 4. Run AION 2 and Discord desktop on the same computer. [Npcap](https://npcap.com/#download) is required; an existing installation can be reused.

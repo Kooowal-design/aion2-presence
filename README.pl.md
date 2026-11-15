@@ -8,7 +8,7 @@
 
 Bezpłatna aplikacja Windows z otwartym kodem, pokazująca statystyki postaci i to, co robisz w grze. Działa samodzielnie w tle. Nie wymaga uruchomionego DPS metera, tokena Discord ani konfiguracji w Developer Portal.
 
-**[Pobierz na Windows](https://github.com/Kooowal-design/aion2-presence/releases/tag/v0.2.0-beta.11)** · **[Wszystkie wersje](https://github.com/Kooowal-design/aion2-presence/tags)** · **[Zgłoś błąd](https://github.com/Kooowal-design/aion2-presence/issues/new/choose)**
+**[Pobierz na Windows](https://github.com/Kooowal-design/aion2-presence/releases/tag/v0.2.0-beta.12)** · **[Wszystkie wersje](https://github.com/Kooowal-design/aion2-presence/tags)** · **[Zgłoś błąd](https://github.com/Kooowal-design/aion2-presence/issues/new/choose)**
 
 ## Jak wygląda na Discordzie
 
@@ -31,7 +31,7 @@ Każde pole ma własny przełącznik: **nick, klasa, CP, GS, level i aktywność
 | --- | --- |
 | **Automatycznie — domyślnie** | Wybrane statystyki podczas zwykłej gry; sama rozpoznana aktywność, gdy trwa. |
 | **Wybrane statystyki** | Wybrane dane postaci, także podczas aktywności. |
-| **Sama aktywność** | Aktualna aktywność albo `AION 2`, jeśli żadna nie została rozpoznana. |
+| **Sama aktywność** | Aktualna aktywność albo `AION 2 - In game`, jeśli żadna nie została rozpoznana. |
 | **Tylko AION 2** | Sama nazwa `AION 2`; wybrane szczegóły pozostają w profilu. |
 
 ![Automatycznie: statystyki, następnie aktywność i ponownie statystyki](docs/discord-auto-v11-pl.png)
@@ -58,7 +58,7 @@ Mały znaczek w rogu **grafiki klasy wewnątrz karty gry** oznacza walkę z boss
 | Zbieranie surowców | `Gathering` |
 | Crafting, w tym automatyczne serie | `Crafting` |
 | Konkurencja Shugo — eksperymentalnie, obie frakcje | `Shugo Festival · Defend Shugo Merchants` |
-| Brak rozpoznanej aktywności | `AION 2` albo wybrane statystyki w trybie automatycznym |
+| Brak rozpoznanej aktywności | `AION 2 - In game` albo wybrane statystyki na liście w trybie automatycznym |
 
 Nazwy dungeonów i bossów pochodzą z rozpoznanych danych gry. **Wykrywanie bossa zależy od danych NPC dołączonych do aplikacji oraz odebranych danych walki. Niektóre bossy mogą nie zostać rozpoznane.** Dotyczy to zarówno dungeonów, jak i otwartego świata.
 
@@ -72,7 +72,7 @@ Walka z bossem ma pierwszeństwo przed zbieraniem i craftingiem. **Nie wykrywamy
 
 ## Instalacja
 
-1. Otwórz **[bieżące wydanie](https://github.com/Kooowal-design/aion2-presence/releases/tag/v0.2.0-beta.11)** i pobierz **Aion2Presence-Setup.exe**. **[Wszystkie wersje](https://github.com/Kooowal-design/aion2-presence/tags)** znajdziesz w Tags; opcja **Downloads** przy danej wersji prowadzi do plików wydania.
+1. Otwórz **[bieżące wydanie](https://github.com/Kooowal-design/aion2-presence/releases/tag/v0.2.0-beta.12)** i pobierz **Aion2Presence-Setup.exe**. **[Wszystkie wersje](https://github.com/Kooowal-design/aion2-presence/tags)** znajdziesz w Tags; opcja **Downloads** przy danej wersji prowadzi do plików wydania.
 2. Przy ręcznej aktualizacji zakończ działającą kopię z menu ikony przy zegarku. Uruchom instalator, wybierz folder i kliknij **Zainstaluj**.
 3. Włącz **AION2 Presence** ze skrótu na pulpicie lub z menu Start.
 4. Uruchom AION 2 i Discord desktop na tym samym komputerze. Wymagany jest [Npcap](https://npcap.com/#download); istniejącą instalację można wykorzystać ponownie.

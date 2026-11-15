@@ -73,7 +73,8 @@ public static class PresenceFormat
     }
     public static bool HasActivity(string? activity) => Clean(activity) is { Length: > 0 } text
         && !text.Equals("In game", StringComparison.OrdinalIgnoreCase)
-        && !text.Equals("AION 2", StringComparison.OrdinalIgnoreCase);
+        && !text.Equals("AION 2", StringComparison.OrdinalIgnoreCase)
+        && !text.Equals("AION 2 - In game", StringComparison.OrdinalIgnoreCase);
     public static string? ActivityIcon(string? activity)
     {
         if (!HasActivity(activity)) return null;
@@ -103,7 +104,7 @@ public static class PresenceFormat
         if (p.GearScore && c.GearScore > 0) parts.Add($"GS {c.GearScore}");
         if (p.Level && c.Level > 0) parts.Add($"Lv {c.Level}");
         result["details"] = Limit(string.Join(" · ", parts.Where(x => x.Length > 0)) is { Length: > 0 } line ? line : "AION 2");
-        if (p.Activity) result["state"] = Limit(HasActivity(activity) ? activity : "AION 2");
+        if (p.Activity) result["state"] = Limit(HasActivity(activity) ? activity : "AION 2 - In game");
         else result.Remove("state");
         result["status_display_type"] = p.MemberListDisplay switch {
             "game" => 0,

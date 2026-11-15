@@ -17,10 +17,10 @@ internal static class PresenceTests
         Check(active["details"]!.GetValue<string>() == "Lyra · Spiritmaster · CP 86.32k · GS 1520", "Full selected profile stats survive automatic switching");
         Check(active["state"]!.GetValue<string>() == "Crafting", "Profile activity is separate from statistics");
         Check(active["timestamps"]!["start"]!.GetValue<long>() == 123, "Changing display preserves session time");
-        foreach (var idle in new[] { "In game", " in GAME ", "AION 2", "", "  " }) {
+        foreach (var idle in new[] { "In game", " in GAME ", "AION 2", "AION 2 - In game", "", "  " }) {
             var p = Make(activity: idle);
             Check(p["status_display_type"]!.GetValue<int>() == 2 && PresenceFormat.MemberListText(p).Contains("CP 86.32k"), "Auto restores statistics while idle");
-            Check(p["assets"]?["small_image"] is null && p["state"]!.GetValue<string>() == "AION 2", "Idle has a correctly spaced name and no badge");
+            Check(p["assets"]?["small_image"] is null && p["state"]!.GetValue<string>() == "AION 2 - In game", "Idle has a descriptive profile line and no badge");
         }
         foreach (var item in new[] { ("Crafting", "crafting"), ("Gathering", "gathering"), ("Shattered Arkanis", "dungeon"), ("Fighting Boss", "boss"), ("Shattered Arkanis · Fighting Boss", "boss"), ("Shugo Festival · Defend Shugo Merchants", "shugo") }) {
             var p = Make(activity:item.Item1);
@@ -32,7 +32,7 @@ internal static class PresenceTests
             Check(p["status_display_type"]!.GetValue<int>() == (mode == "game" ? 0 : 2), "Disabled activity cannot trigger automatic switching");
         }
         Check(Make(new() { MemberListDisplay = "stats" })["status_display_type"]!.GetValue<int>() == 2, "Stats mode remains on selected statistics during activity");
-        Check(PresenceFormat.MemberListText(Make(new() { MemberListDisplay = "activity" }, "In game")) == "AION 2", "Activity-only falls back to AION 2");
+        Check(PresenceFormat.MemberListText(Make(new() { MemberListDisplay = "activity" }, "In game")) == "AION 2 - In game", "Activity-only shows the descriptive idle line");
         var game = Make(new() { MemberListDisplay = "game", Level = true });
         Check(game["status_display_type"]!.GetValue<int>() == 0 && PresenceFormat.MemberListText(game) == "AION 2", "Fixed game-name mode uses Discord Name");
         Check(game["details"]!.GetValue<string>().Contains("CP 86.32k") && game["details"]!.GetValue<string>().Contains("Lv 45") && game["state"]!.GetValue<string>() == "Crafting", "Fixed name keeps selected profile details and activity");
@@ -44,7 +44,7 @@ internal static class PresenceTests
         }
         var none = Make(new() { Name = false, Class = false, CombatPower = false, GearScore = false, Level = false, Activity = false });
         Check(PresenceFormat.MemberListText(none) == "AION 2", "No selected fields falls back to AION 2");
-        Check(PresenceFormat.MemberListText(Make(new() { Name = false, Class = false, CombatPower = false, GearScore = false, Level = false, MemberListDisplay = "activity" }, "In game")) == "AION 2", "All character fields off does not expose In game on the list");
+        Check(PresenceFormat.MemberListText(Make(new() { Name = false, Class = false, CombatPower = false, GearScore = false, Level = false, MemberListDisplay = "activity" }, "In game")) == "AION 2 - In game", "Activity-only idle remains descriptive with character fields hidden");
         var legacy = JsonSerializer.Deserialize<Preferences>("{\"Name\":false,\"GearScore\":false}", Preferences.Json)!;
         Check(!legacy.Name && !legacy.GearScore && legacy.Class && legacy.MemberListDisplay == "auto", "Old settings keep all field choices and gain Auto mode");
         var saved = JsonSerializer.Deserialize<Preferences>(JsonSerializer.Serialize(new Preferences { MemberListDisplay = "game", Level = true }, Preferences.Json), Preferences.Json)!;
