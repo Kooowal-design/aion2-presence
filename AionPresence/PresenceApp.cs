@@ -25,6 +25,7 @@ public sealed class PresenceApp : IAsyncDisposable
     public string CaptureStatus { get; private set; } = "Czekam na silnik";
     public string Preview { get; private set; } = "";
     public string ProfilePreview { get; private set; } = "";
+    public string MemberListPreview { get; private set; } = "";
     public string LastError => lastError.Length > 0 ? lastError : diagnostics.Message(Environment.TickCount64);
     public bool Accepted { get; private set; }
     public bool DiscordConnected { get; private set; }
@@ -45,18 +46,16 @@ public sealed class PresenceApp : IAsyncDisposable
         var state = d.Activity;
         var artwork = new JsonObject();
         if (key.Length > 0) artwork["large_image"] = ReleaseInfo.ImageFor(key);
+        if (preferences.Activity && PresenceFormat.ActivityIcon(state) is { } badge) {
+            artwork["small_image"] = ReleaseInfo.ImageFor("activity_" + badge);
+            artwork["small_text"] = PresenceFormat.Limit(PresenceFormat.Clean(state));
+        }
         var original = new JsonObject {
             ["state"] = PresenceFormat.Limit(PresenceFormat.Clean(state)),
             ["assets"] = artwork,
             ["timestamps"] = new JsonObject { ["start"] = since }
         };
-        var result = PresenceFormat.Build(original, d, preferences);
-        // Keep the profile's second line focused on level and activity.
-        var full = new List<string>();
-        if (c.Level > 0) full.Add($"Lv {c.Level}");
-        if (preferences.Activity && !string.IsNullOrWhiteSpace(d.Activity)) full.Add(PresenceFormat.Clean(d.Activity));
-        result["state"] = PresenceFormat.Limit(full.Count > 0 ? string.Join(" · ", full) : "AION 2");
-        return result;
+        return PresenceFormat.Build(original, d, preferences);
     }
     private async Task StartEngine(CancellationToken ct)
     {
@@ -123,7 +122,8 @@ public sealed class PresenceApp : IAsyncDisposable
                     payload = ActivityFor(d, preferences(), sessionSince);
                     Preview = payload["details"]?.GetValue<string>() ?? "";
                     ProfilePreview = payload["state"]?.GetValue<string>() ?? "";
-                } else { identity = null; Preview = ""; ProfilePreview = ""; }
+                    MemberListPreview = PresenceFormat.MemberListText(payload);
+                } else { identity = null; Preview = ""; ProfilePreview = ""; MemberListPreview = ""; }
                 if (discord is null && now >= retryDiscord) {
                     try { discord = await DiscordPipe.Connect("", ct); DiscordConnected = true; sent = null; }
                     catch (IOException e) { Status = e.Message; retryDiscord = now.AddSeconds(10); }
@@ -133,9 +133,9 @@ public sealed class PresenceApp : IAsyncDisposable
                     try {
                         var response = await discord.Set(Command(payload), ct);
                         sent = json; lastSent = now; Accepted = payload is not null;
-                        var echoed = response["data"]?["status_display_type"]?.GetValue<int>() == 2;
+                        var echoed = payload is not null && response["data"]?["status_display_type"]?.GetValue<int>() == payload["status_display_type"]?.GetValue<int>();
                         Status = payload is null ? "Discord połączony · status gry wyłączony" : echoed ?
-                            "Discord potwierdził wyświetlanie szczegółów na liście" :
+                            "Discord potwierdził ustawienie listy osób" :
                             "Discord przyjął status · wygląd listy zależy od klienta";
                     }
                     catch (Exception e) when (e is IOException or OperationCanceledException or InvalidOperationException) {

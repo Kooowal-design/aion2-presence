@@ -22,6 +22,7 @@ public sealed class Preferences
     public bool GearScore { get; set; } = true;
     public bool Activity { get; set; } = true;
     public bool Level { get; set; }
+    public string MemberListDisplay { get; set; } = "auto";
     public bool StartMinimized { get; set; }
     public bool AutoStart { get; set; }
     public static readonly JsonSerializerOptions Json = new() { PropertyNameCaseInsensitive = true, WriteIndented = true };
@@ -43,7 +44,7 @@ public sealed class Preferences
 
 public static class PresenceFormat
 {
-    // A2Tools' own class-art keys. The plugin reports the game's localized class name.
+    // Normalize the game's localized class names to the project's artwork keys.
     private static readonly Dictionary<string, string> Classes = new() {
         ["검성"] = "Gladiator", ["수호성"] = "Templar", ["궁성"] = "Ranger", ["살성"] = "Assassin",
         ["마도성"] = "Sorcerer", ["정령성"] = "Spiritmaster", ["치유성"] = "Cleric", ["호법성"] = "Chanter",
@@ -70,6 +71,25 @@ public static class PresenceFormat
         var name = Clean(c.Class);
         return Classes.GetValueOrDefault(name, name);
     }
+    public static bool HasActivity(string? activity) => Clean(activity) is { Length: > 0 } text
+        && !text.Equals("In game", StringComparison.OrdinalIgnoreCase)
+        && !text.Equals("AION 2", StringComparison.OrdinalIgnoreCase);
+    public static string? ActivityIcon(string? activity)
+    {
+        if (!HasActivity(activity)) return null;
+        var text = Clean(activity);
+        if (text.Contains("Fighting ", StringComparison.OrdinalIgnoreCase)) return "boss";
+        if (text.Contains("Crafting", StringComparison.OrdinalIgnoreCase)) return "crafting";
+        if (text.Contains("Gathering", StringComparison.OrdinalIgnoreCase)) return "gathering";
+        if (text.StartsWith("Shugo Festival", StringComparison.OrdinalIgnoreCase)) return "shugo";
+        return "dungeon";
+    }
+    public static string MemberListText(JsonObject activity) =>
+        activity["status_display_type"]?.GetValue<int>() switch {
+            0 => "AION 2",
+            1 => activity["state"]?.GetValue<string>() ?? "AION 2",
+            _ => activity["details"]?.GetValue<string>() ?? "AION 2"
+        };
     public static JsonObject Build(JsonObject original, LiveData live, Preferences p)
     {
         var result = (JsonObject)original.DeepClone();
@@ -79,20 +99,21 @@ public static class PresenceFormat
         var parts = new List<string>();
         if (p.Name) parts.Add(Clean(c.Name));
         if (p.Class && cls.Length > 0) parts.Add(cls);
-        if (p.Level && c.Level > 0) parts.Add($"Lv {c.Level}");
         if (p.CombatPower && c.CombatPower > 0) parts.Add($"CP {CP(c.CombatPower)}");
         if (p.GearScore && c.GearScore > 0) parts.Add($"GS {c.GearScore}");
-        if (p.Activity && activity.Length > 0) parts.Add(activity);
+        if (p.Level && c.Level > 0) parts.Add($"Lv {c.Level}");
         result["details"] = Limit(string.Join(" · ", parts.Where(x => x.Length > 0)) is { Length: > 0 } line ? line : "AION 2");
-        result["status_display_type"] = 2; // Details in Discord's member list.
+        if (p.Activity) result["state"] = Limit(HasActivity(activity) ? activity : "AION 2");
+        else result.Remove("state");
+        result["status_display_type"] = p.MemberListDisplay switch {
+            "game" => 0,
+            "activity" when p.Activity => 1,
+            "stats" => 2,
+            _ => p.Activity && HasActivity(activity) ? 1 : 2
+        };
         result["type"] = 0;
-        // Preserve A2Tools' boss/dungeon/server state, images and timestamps.
-        // Full statistics also remain available on the large image's tooltip.
-        var full = new List<string> { Clean(c.Name), cls };
-        if (c.Level > 0) full.Add($"Lv {c.Level}");
-        if (c.CombatPower > 0) full.Add($"CP {c.CombatPower.Value.ToString("N0", CultureInfo.InvariantCulture)}");
-        if (c.GearScore > 0) full.Add($"GS {c.GearScore}");
-        if (result["assets"] is JsonObject assets) assets["large_text"] = Limit(string.Join(" · ", full.Where(x => x.Length > 0)));
+        // Hidden fields stay hidden in the artwork tooltip as well.
+        if (result["assets"] is JsonObject assets) assets["large_text"] = result["details"]!.DeepClone();
         return result;
     }
 }

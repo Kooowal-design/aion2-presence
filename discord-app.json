@@ -13,14 +13,19 @@
     "brawler"
   ],
   "imageUrls": {
-    "chanter": "https://cdn.discordapp.com/app-assets/1556021373401432214/1556027631705784401.png",
-    "ranger": "https://cdn.discordapp.com/app-assets/1556021373401432214/1556027631684821022.png",
-    "sorcerer": "https://cdn.discordapp.com/app-assets/1556021373401432214/1556027627897094285.png",
-    "templar": "https://cdn.discordapp.com/app-assets/1556021373401432214/1556027619038728212.png",
-    "spiritmaster": "https://cdn.discordapp.com/app-assets/1556021373401432214/1556027632599040041.png",
-    "gladiator": "https://cdn.discordapp.com/app-assets/1556021373401432214/1556027620704129075.png",
-    "assassin": "https://cdn.discordapp.com/app-assets/1556021373401432214/1556027600596635679.png",
-    "cleric": "https://cdn.discordapp.com/app-assets/1556021373401432214/1556027594191937536.png",
-    "brawler": "https://cdn.discordapp.com/app-assets/1556021373401432214/1556027609014345808.png"
+    "gladiator": "https://raw.githubusercontent.com/Kooowal-design/aion2-presence/v0.2.0-beta.11/AionPresence/Assets/Discord/class/gladiator.png",
+    "templar": "https://raw.githubusercontent.com/Kooowal-design/aion2-presence/v0.2.0-beta.11/AionPresence/Assets/Discord/class/templar.png",
+    "ranger": "https://raw.githubusercontent.com/Kooowal-design/aion2-presence/v0.2.0-beta.11/AionPresence/Assets/Discord/class/ranger.png",
+    "assassin": "https://raw.githubusercontent.com/Kooowal-design/aion2-presence/v0.2.0-beta.11/AionPresence/Assets/Discord/class/assassin.png",
+    "sorcerer": "https://raw.githubusercontent.com/Kooowal-design/aion2-presence/v0.2.0-beta.11/AionPresence/Assets/Discord/class/sorcerer.png",
+    "spiritmaster": "https://raw.githubusercontent.com/Kooowal-design/aion2-presence/v0.2.0-beta.11/AionPresence/Assets/Discord/class/spiritmaster.png",
+    "cleric": "https://raw.githubusercontent.com/Kooowal-design/aion2-presence/v0.2.0-beta.11/AionPresence/Assets/Discord/class/cleric.png",
+    "chanter": "https://raw.githubusercontent.com/Kooowal-design/aion2-presence/v0.2.0-beta.11/AionPresence/Assets/Discord/class/chanter.png",
+    "brawler": "https://raw.githubusercontent.com/Kooowal-design/aion2-presence/v0.2.0-beta.11/AionPresence/Assets/Discord/class/brawler.png",
+    "activity_boss": "https://raw.githubusercontent.com/Kooowal-design/aion2-presence/v0.2.0-beta.11/AionPresence/Assets/Discord/activity/boss.png",
+    "activity_dungeon": "https://raw.githubusercontent.com/Kooowal-design/aion2-presence/v0.2.0-beta.11/AionPresence/Assets/Discord/activity/dungeon.png",
+    "activity_crafting": "https://raw.githubusercontent.com/Kooowal-design/aion2-presence/v0.2.0-beta.11/AionPresence/Assets/Discord/activity/crafting.png",
+    "activity_gathering": "https://raw.githubusercontent.com/Kooowal-design/aion2-presence/v0.2.0-beta.11/AionPresence/Assets/Discord/activity/gathering.png",
+    "activity_shugo": "https://raw.githubusercontent.com/Kooowal-design/aion2-presence/v0.2.0-beta.11/AionPresence/Assets/Discord/activity/shugo.png"
   }
 }

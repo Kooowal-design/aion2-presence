@@ -71,9 +71,9 @@
                 <ScrollViewer Grid.Row="4" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,3,0">
                     <Grid>
                         <StackPanel x:Name="HomePage" Visibility="{Binding IsHome,Converter={StaticResource VisibleIf}}">
-                            <Border Style="{StaticResource Card}" Height="184" Padding="20,17" Margin="0,0,0,14">
+                            <Border Style="{StaticResource Card}" Height="164" Padding="20,17" Margin="0,0,0,14">
                                 <Grid>
-                                    <Grid.RowDefinitions><RowDefinition Height="86"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+                                    <Grid.RowDefinitions><RowDefinition Height="76"/><RowDefinition Height="*"/></Grid.RowDefinitions>
                                     <Image Grid.RowSpan="2" Source="Assets/UI/wing.png" Width="240" HorizontalAlignment="Right" Stretch="Uniform" Opacity=".36" Margin="0,10,-14,-7" IsHitTestVisible="False"/>
                                     <Grid>
                                         <Grid.ColumnDefinitions><ColumnDefinition Width="78"/><ColumnDefinition Width="220"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
@@ -94,7 +94,7 @@
                                     </StackPanel>
                                 </Grid>
                             </Border>
-                            <Border Style="{StaticResource Card}" Height="143" Margin="0,0,0,14">
+                            <Border Style="{StaticResource Card}" Height="160" Margin="0,0,0,14">
                                 <Grid><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
                                     <TextBlock Text="{Binding DiscordPreviewHeading}" Style="{StaticResource SectionLabel}"/>
                                     <Border Grid.Row="1" Background="#63102438" BorderBrush="#7191AAC0" BorderThickness="1" CornerRadius="10" Padding="14,9">
@@ -102,13 +102,24 @@
                                             <Border Width="34" Height="34" CornerRadius="8" HorizontalAlignment="Left"><Border.Background><LinearGradientBrush StartPoint="0,0" EndPoint="1,1"><GradientStop Color="#8395FF"/><GradientStop Color="#4856D3" Offset="1"/></LinearGradientBrush></Border.Background>
                                                 <Grid Margin="6,7"><Path Data="M1,6 C3,2 6,2 8,3 H14 C16,2 19,2 21,6 L23,16 L18,18 L15,15 H9 L5,18 L0,16 Z" Fill="White" Stretch="Uniform"/><Ellipse Width="3" Height="4" Fill="#5967E7" HorizontalAlignment="Left" Margin="5,1,0,0"/><Ellipse Width="3" Height="4" Fill="#5967E7" HorizontalAlignment="Right" Margin="0,1,5,0"/></Grid>
                                             </Border>
-                                            <StackPanel Grid.Column="1" VerticalAlignment="Center"><TextBlock Text="{Binding DiscordSummary}" FontSize="19" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" ToolTip="{Binding DiscordSummary}"/><TextBlock Text="{Binding DiscordProfile}" FontSize="18" Foreground="#ABC2D4" Margin="0,5,0,0" TextTrimming="CharacterEllipsis" ToolTip="{Binding DiscordProfile}"/></StackPanel>
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center"><TextBlock Text="{Binding ListLabel}" FontSize="17" Foreground="#79DFE8" TextTrimming="CharacterEllipsis" ToolTip="{Binding ListLabel}" Margin="0,0,0,4"/><TextBlock Text="{Binding DiscordSummary}" FontSize="19" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" ToolTip="{Binding DiscordSummary}"/><TextBlock Text="{Binding DiscordProfile}" FontSize="18" Foreground="#ABC2D4" Margin="0,5,0,0" TextTrimming="CharacterEllipsis" ToolTip="{Binding DiscordProfile}"/></StackPanel>
                                         </Grid>
                                     </Border>
                                 </Grid>
                             </Border>
-                            <Border Style="{StaticResource Card}" MinHeight="98" Margin="0,0,0,4">
-                                <StackPanel><TextBlock Text="{Binding DisplayHeading}" Style="{StaticResource SectionLabel}"/>
+                            <Border Style="{StaticResource Card}" MinHeight="134" Margin="0,0,0,4">
+                                <StackPanel><Grid Margin="0,0,0,10"><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                    <TextBlock Text="{Binding DisplayHeading}" FontSize="16" FontWeight="SemiBold" Foreground="#B7D0E3"/>
+                                    <Button Grid.Column="1" Style="{StaticResource ActionButton}" Padding="12,5" FontSize="17" Click="MemberListModeClick" ToolTip="{Binding MemberListModeText}">
+                                        <Button.ContextMenu><ContextMenu DataContext="{Binding PlacementTarget.DataContext,RelativeSource={RelativeSource Self}}">
+                                            <MenuItem Header="{Binding AutoModeText}" Click="AutoModeClick"/>
+                                            <MenuItem Header="{Binding StatsModeText}" Click="StatsModeClick"/>
+                                            <MenuItem Header="{Binding ActivityModeText}" Click="ActivityModeClick"/>
+                                            <MenuItem Header="{Binding GameModeText}" Click="GameModeClick"/>
+                                        </ContextMenu></Button.ContextMenu>
+                                        <StackPanel Orientation="Horizontal"><TextBlock Text="{Binding MemberListModeText}" FontSize="17"/><TextBlock Text="⌄" FontSize="17" Margin="12,0,0,0"/></StackPanel>
+                                    </Button>
+                                </Grid>
                                     <UniformGrid Columns="6"><CheckBox Style="{StaticResource Switch}" Content="{Binding CharacterText}" IsChecked="{Binding ShowName}"/><CheckBox Style="{StaticResource Switch}" Content="{Binding ClassText}" IsChecked="{Binding ShowClass}"/><CheckBox Style="{StaticResource Switch}" Content="CP" IsChecked="{Binding ShowCp}"/><CheckBox Style="{StaticResource Switch}" Content="GS" IsChecked="{Binding ShowGs}"/><CheckBox Style="{StaticResource Switch}" Content="{Binding ActivityOptionText}" IsChecked="{Binding ShowActivity}"/><CheckBox Style="{StaticResource Switch}" Content="Level" IsChecked="{Binding ShowLevel}"/></UniformGrid>
                                 </StackPanel>
                             </Border>

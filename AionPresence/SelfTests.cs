@@ -15,6 +15,7 @@ public static class SelfTests
     public static async Task<string> Run()
     {
         try {
+            count += PresenceTests.Verify();
             var language = UiLanguage.Language;
             UiLanguage.Language = "en";
             Check(UiLanguage.Text("Zainstaluj") == "Install", "English installer text");
@@ -27,6 +28,13 @@ public static class SelfTests
                 Check(preview.UpdateTitle == "Up to date", "Current-version panel in preview");
                 preview.SetPreviewUpdate(true);
                 Check(preview.UpdateTitle == "Update available", "Available-update panel in preview");
+                preview.SetMemberListMode("game");
+                Check(preview.ListLabel == "Member list: AION 2", "Window applies fixed game-name mode");
+                preview.SetMemberListMode("auto"); preview.ShowActivity = true;
+                Check(preview.ListLabel.Contains("Shugo Festival"), "Window applies automatic activity mode");
+                preview.ShowActivity = false;
+                Check(!preview.ListLabel.Contains("Shugo Festival") && preview.DiscordProfile.Length == 0, "Window respects disabled activity in Auto mode");
+                preview.ShowActivity = true;
                 preview.ShowName = !preview.ShowName;
                 Check(preview.ShowName == preview.DiscordSummary.StartsWith("Lyra"), "Display choice changes the actual Discord summary");
                 preview.ShowPage("home"); preview.Width=960; preview.Height=720; preview.UpdateLayout();
@@ -96,16 +104,16 @@ public static class SelfTests
             Check(ReleaseInfo.ApplicationId.Length >= 17 && ReleaseInfo.ApplicationId.All(char.IsAsciiDigit), "Discord application identifier format");
             var c = new CharacterProfile("Kowal", "Gladiator", 1304, 50, 123450, 2050);
             var live = new LiveData(1, now, true, c, "Fighting Garshim", "Kaisinel", true);
-            var prefs = new Preferences();
+            var prefs = new Preferences { MemberListDisplay = "stats" };
             var result = PresenceApp.ActivityFor(live, prefs, 123);
-            Check(result["details"]!.GetValue<string>() == "Kowal · Gladiator · CP 123.45k · GS 2050 · Fighting Garshim", "Requested summary order");
+            Check(result["details"]!.GetValue<string>() == "Kowal · Gladiator · CP 123.45k · GS 2050", "Requested summary order");
             Check(result["status_display_type"]!.GetValue<int>() == 2, "Details selected for member list");
             Check(result["timestamps"]!["start"]!.GetValue<long>() == 123, "Session time retained");
-            Check(result["state"]!.GetValue<string>() == "Lv 50 · Fighting Garshim", "Profile second line contains only level and activity");
+            Check(result["state"]!.GetValue<string>() == "Fighting Garshim", "Profile second line contains only activity");
             prefs.CombatPower = false; prefs.Activity = false;
             Check(!PresenceApp.ActivityFor(live, prefs, 123)["details"]!.GetValue<string>().Contains("CP "), "Visibility setting CP");
             Check(!PresenceApp.ActivityFor(live, prefs, 123)["details"]!.GetValue<string>().Contains("Fighting"), "Visibility setting activity");
-            Check(PresenceApp.ActivityFor(live, prefs, 123)["state"]!.GetValue<string>() == "Lv 50", "Hidden activity is omitted from profile second line");
+            Check(PresenceApp.ActivityFor(live, prefs, 123)["state"] is null, "Hidden activity is omitted from profile second line");
             Check(PresenceApp.ActivityFor(live with { Character = c with { Level = null } }, new(), 123)["state"]!.GetValue<string>() == "Fighting Garshim", "Unknown level is omitted from profile second line");
             Check(!live.Fresh(now + 31000), "Expired source not accepted");
             Check(!live.Fresh(now - 6000), "Future source not accepted");

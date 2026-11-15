@@ -1,107 +1,116 @@
 # AION2 Presence
 
-<img src="AionPresence/Assets/logo.png" width="96" alt="AION2 Presence logo">
+<img src="AionPresence/Assets/logo.png" width="88" alt="AION2 Presence logo">
 
 [Polski](README.pl.md) | **English**
 
-A standalone Windows app that shows your AION 2 character, stats and current activity on Discord.
+**Your AION 2 character and activity, on Discord.**
 
-Example status below your name:
+A free, open-source Windows app that shows your character stats and what you are doing in game. Runs independently in the background — no running DPS meter, Discord token or developer setup required.
 
-`Lyra · Cleric · CP 86.32k · GS 1520 · In game`
+**[Download for Windows](https://github.com/Kooowal-design/aion2-presence/releases/tag/v0.2.0-beta.11)** · **[All versions](https://github.com/Kooowal-design/aion2-presence/tags)** · **[Report a bug](https://github.com/Kooowal-design/aion2-presence/issues/new/choose)**
 
-The app runs in the background, reads character information through Npcap and updates your Discord activity.
+## How it looks on Discord
+
+![Member list, hover preview and profile with original Presence artwork](docs/discord-presence-v11.png)
+
+The **member list** can show your selected stats or current activity. The **hover preview** expands the selected list text, while the **profile activity card** keeps your selected character information and activity on two separate lines.
+
+```text
+Lyra · Spiritmaster · CP 86.32k · GS 1520 · Lv 45
+Crafting
+```
+
+These illustrations use fictional names and stats. Discord controls placement, text truncation and which activity takes priority.
+
+## Choose what appears
+
+Keep control of every field: **character name, class, CP, GS, level and activity** can each be switched on or off. Selected character fields appear on the profile's first line; activity appears on its second. The level is included on the first line when enabled.
+
+| Member-list mode | What appears below your name |
+| --- | --- |
+| **Auto — default** | Selected stats during normal play; only the recognized activity while it is active. |
+| **Selected stats** | Your chosen character fields, even during an activity. |
+| **Activity only** | The current activity, or `AION 2` when no activity is recognized. |
+| **AION 2 only** | Just `AION 2`; selected details remain in your profile. |
+
+![Automatic mode: selected stats, then activity, then selected stats again](docs/discord-auto-v11.png)
+
+Turning **Activity** off hides its profile text and small badge, and prevents Auto from switching to an activity. Hidden text fields are also omitted from the artwork tooltip. If no fields are selected, the list falls back to `AION 2`.
+
+## Original class and activity icons
+
+![Nine original class icons for AION2 Presence](docs/presence-classes-v11.png)
+
+The large image identifies your class. Nine designs are included: Gladiator, Templar, Ranger, Assassin, Sorcerer, Spiritmaster, Cleric, Chanter and Brawler. The Brawler design is prepared for supported game versions; it does not imply availability in every region.
+
+![Boss, dungeon, crafting, gathering and Shugo activity badges](docs/presence-activities-v11.png)
+
+A small badge in the corner of the **class artwork inside the activity card** identifies boss combat, a dungeon, crafting, gathering or Shugo. Normal in-game status has no small badge. **The badge does not replace the online/idle/DND dot beside your Discord avatar.** Artwork is hosted in this public repository and loaded by Discord.
 
 ## Detected activities
 
-| Activity | Example Discord status |
+| Activity | Example status |
 | --- | --- |
 | Recognized dungeon | `Dungeon name (difficulty)` |
 | Fighting a recognized boss in a dungeon | `Dungeon name (difficulty) · Fighting Boss name` |
-| Fighting a recognized boss outside a dungeon | `Fighting Boss name` |
+| Fighting a recognized open-world boss | `Fighting Boss name` |
 | Gathering resources | `Gathering` |
-| Crafting | `Crafting` |
-| Shugo competition — experimental, 9 competitions for both factions | `Shugo Festival · Defend Shugo Merchants` |
-| No recognized activity | `In game` |
+| Crafting, including automatic batches | `Crafting` |
+| Shugo competition — experimental, both factions | `Shugo Festival · Defend Shugo Merchants` |
+| No recognized activity | `AION 2`, or your selected stats in Auto mode |
 
-Dungeon and boss names are filled in from recognized game data. Boss combat takes priority over gathering and crafting. AFK and open-world locations are not detected.
+Dungeon and boss names come from recognized game data. **Boss detection depends on the NPC data bundled with the app and the combat data received from the game. Some bosses may not be recognized.** Support includes recognized open-world bosses as well as dungeon bosses.
 
-Dungeon names require a captured map-load message. Party information alone is not treated as your current location. If the app starts mid-session, the name may remain unavailable until the next map load; a departure or transition clears the previous location.
+Dungeon names require a captured map-load message; party information alone does not establish your location. Starting mid-session may require another map load before a dungeon name appears. Departures and transitions clear the previous location.
 
-## Discord examples
+Crafting activates when production starts, including automatic batches. Opening the recipe window alone does not activate it. No per-recipe setup is needed; Substance Morph is excluded. See [crafting validation and limitations](docs/CRAFTING.md).
 
-![Discord member list, hover preview and profile with fictional data](docs/discord-examples.png)
+Shugo support includes nine named competitions for Elyos and Asmodian maps. Known venue maps or active runs identify participation; schedule broadcasts alone do not. It remains experimental — see [Shugo detection](docs/SHUGO.md).
 
-The illustration follows observed Discord layouts using fictional names, avatars and statistics. It shows the **member list**, the **hover tooltip** without voice information, and the **profile activity card**. CP/GS appear once in the profile's text lines; the second line shows level and activity. Long text can be truncated by Discord. This is an illustrative mockup, not a guarantee of identical rendering on every client.
+Boss combat takes priority over gathering and crafting. **AFK and open-world location names are not detected.**
 
-## Installation
+## Install
 
-1. Open **[Releases](https://github.com/Kooowal-design/aion2-presence/releases)** and download the latest installer.
-2. Exit any running copy from its system tray menu. Run `Aion2Presence-Setup.exe`, choose your installation folder and select **Install**.
-3. Launch **AION2 Presence** from the desktop shortcut or Windows Start menu.
-4. AION 2 and Discord desktop must run on the same computer. [Npcap](https://npcap.com/#download) is required to read game traffic. If it is already installed, you do not need to install it again.
-5. Enable activity sharing in Discord. You do not need to create a Discord application, enter a token or sign in to Discord through this app.
+1. Open the **[current release](https://github.com/Kooowal-design/aion2-presence/releases/tag/v0.2.0-beta.11)** and download **Aion2Presence-Setup.exe**. Browse **[all versions](https://github.com/Kooowal-design/aion2-presence/tags)** through Tags; use **Downloads** beside a version to open its release assets.
+2. If updating manually, exit the running copy from its system tray menu. Run the installer, choose a folder and select **Install**.
+3. Launch **AION2 Presence** from its desktop shortcut or the Windows Start menu.
+4. Run AION 2 and Discord desktop on the same computer. [Npcap](https://npcap.com/#download) is required; an existing installation can be reused.
+5. Enable activity sharing in Discord. You do not need to create a Discord application, provide a token or sign in through Presence.
 
-**If AION 2 reports an error when you try to launch it:** exit AION2 Presence from its system tray menu, start **AION 2 first**, wait for the game window to appear, and then launch **AION2 Presence**. In this case, disable **Start with Windows** and keep that startup order on subsequent launches as well.
+**If AION 2 reports a launch error:** exit Presence from its tray menu, start **AION 2 first**, then launch Presence. Disable **Start with Windows** if you need to keep this order.
 
-You can leave ExitLag enabled. Capture supports network adapters and loopback traffic.
+ExitLag can stay enabled. Capture supports network adapters and loopback traffic. On a cloud PC, run the game, Discord and Presence inside the same Windows session.
 
-For cloud PCs, install and run the app inside the same Windows session as the game and Discord.
+If character data is missing, wait for entering the world or a teleport. Data not received from the game is omitted. Use only one app to publish AION 2 activity so statuses do not overwrite each other.
 
-If the app starts after you have logged into your character, details may remain unavailable until the game sends another character identity message, for example when entering the world or teleporting. Values that have not been received stay hidden.
+The app and installer support **English / Polski**. The self-contained Windows build does not require a separate .NET installation. The executable is currently unsigned; Windows may show an unknown-publisher warning.
 
-Use only one app to publish AION 2 activity to Discord so that statuses do not overwrite each other.
+## Updates and feedback
 
-The installer and app support **English / Polski**. Use the language selector to switch instantly; your choice is remembered. English is the default.
+Presence checks this project's GitHub releases at startup and every six hours. You can also check manually. A green **Up to date** panel shows the current version; a gold **Update available** panel offers **Download and install**.
 
-## Automatic features
+The installer is verified against its SHA-256 checksum before the app closes and opens installation. Settings and the installation folder are retained. Installation requires your confirmation. A failed update check does not interrupt game capture. Versions before beta.5 need one manual update to receive the updater.
 
-- Your character's name, class, level, CP and GS, when supplied by the game.
-- During combat: the recognized dungeon, difficulty and boss. After combat: the dungeon. Outside a recognized instance: `In game`.
-- Gathering and crafting, including automatic batches.
-- Additional stats in the profile activity card and image tooltip.
-- Activity cleared when the game closes, the capture engine stops responding or the app exits.
-- Minimize to the system tray, with optional launch at Windows startup.
+Use **Report a bug** or **Suggest a feature** in the app or tray menu, or open **[GitHub Issues](https://github.com/Kooowal-design/aion2-presence/issues/new/choose)**. Reports prefill only the app version; nothing is submitted automatically and no character data or logs are attached. A GitHub account is required to submit. English and Polish feedback are welcome.
 
-Gathering is detected from start/result messages and expires after 15/8 seconds without another event. Boss combat takes priority.
+## Privacy and game rules
 
-Crafting activates when production starts and stays active throughout an automatic batch. Opening the recipe window alone does not activate it. No per-recipe setup is needed. Substance Morph is excluded. See [validation scope and limitations](docs/CRAFTING.md).
+There is no app account, app server, telemetry or combat-log upload. Normal Presence does not record raw packets. It reads game traffic through Npcap and sends selected information to the local Discord client. Visibility follows your Discord activity-sharing settings.
 
-Experimental Shugo support identifies nine competitions on Elyos and Asmodian maps: Jump Jump, Mysterious Track, Odyle Flight Frenzy, Defend Shugo Merchants, Not This Tile?, Wraith Evasion, Hidden Lugi, Goldrin's Treasure and Up! Up! Up! The status includes the competition name after a known venue map or active run is received. Schedule broadcasts alone do not activate it. Run deadlines are capped at 20 minutes; without a deadline the lease is 10 minutes, and map-only detection lasts at most 20 minutes. Completion or departure clears the event. Live verification is still needed; see [Shugo detection and sources](docs/SHUGO.md).
+Update checks contact GitHub and send no character data, settings or logs. GitHub receives normal connection information such as your IP address. Settings are stored in `%LOCALAPPDATA%\Aion2Presence`.
 
-Outside recognized dungeon/boss activity, gathering, crafting or that confirmed Shugo run, the status is `In game`. Open-world locations and **AFK are not detected**.
+The optional, separately started [crafting diagnostic](docs/CRAFTING-DIAGNOSTICS.md) records incoming game data locally and may contain character information and chat. It never uploads automatically and is not enabled during normal use.
 
-Discord controls placement and truncation of long text, as well as which activity is shown when several are active. The local preview is illustrative; check the actual display in Discord.
+Presence uses passive Npcap capture, the same approach used by Npcap-based DPS meters. It does not modify game files or memory, inject packets or automate gameplay. This is an unofficial community project — use it at your own risk and follow the game's rules.
 
-## Feedback
+To uninstall, exit from the tray, disable Windows startup and remove the chosen installation folder, the settings folder, and the desktop/Start menu shortcuts.
 
-Use **Report a bug** or **Suggest a feature** in the app or system tray menu. The button opens the corresponding GitHub form; bug reports prefill only the app version. A GitHub account is required to submit. Nothing is submitted automatically, and no character data, capture data or logs are attached. You can write in English or Polish.
+## Source and license
 
-You can also open [Issues](https://github.com/Kooowal-design/aion2-presence/issues/new/choose) directly. Remove private information from screenshots before posting.
+GPL-3.0. Component attribution is in [NOTICE.md](NOTICE.md). **Licenses & source** is available in the app and tray menu. Releases include license notices, SHA-256 checksums and a matching source archive containing the pinned parser and Rust dependency sources. Npcap is not bundled.
 
-## Updates
-
-The app checks this project's public GitHub releases at startup and every six hours. A new-version link appears in the window and a notification is shown in the system tray. You can also check manually from the tray menu.
-
-Select **Download and install** to start an update. The app downloads the installer from this repository, verifies its SHA-256 checksum, closes the running copy and opens the installer. Settings and the installation folder are retained. Installation requires your confirmation; it does not run silently. Updates currently include newer beta releases while you use a beta version. An unsuccessful check does not interrupt game capture.
-
-Versions before 0.2.0-beta.5 need one manual update to receive this feature. Files are still unsigned; checksum verification does not replace a digital signature.
-
-## Privacy and data
-
-There is no app server, account, telemetry or combat-log upload. Normal Presence does not record raw packets. The separate, explicitly started crafting diagnostic records full incoming game-stream data locally, which may include character information and chat; it never uploads it automatically. See [diagnostic scope and instructions](docs/CRAFTING-DIAGNOSTICS.md). The parser reads traffic through Npcap, and the app passes selected information to the local Discord client. Visibility follows your Discord activity-sharing settings. Unavailable fields are omitted.
-
-Update checks contact GitHub at startup and every six hours; downloads start only when you request them. No character data, settings or logs are sent. GitHub receives standard connection information such as your IP address.
-
-Settings are stored in `%LOCALAPPDATA%\Aion2Presence`. To uninstall, exit the app from the system tray, disable its Windows startup option, and remove that folder and the chosen installation folder, plus the desktop and Start menu shortcuts.
-
-## Game rules
-
-AION2 Presence uses passive network capture through Npcap, the same approach used by Npcap-based DPS meters. It reads game data to update your Discord activity without modifying game files or memory, injecting packets or automating gameplay. This is an unofficial community project — use it at your own risk and follow the game's rules.
-
-## Building
-
-Development requirements: .NET SDK 10, Rust stable and a linker for your Windows target.
+Build requirements: .NET SDK 10, Rust stable and a linker for your Windows target.
 
 ```powershell
 git clone --recurse-submodules https://github.com/Kooowal-design/aion2-presence.git
@@ -109,14 +118,4 @@ cd aion2-presence
 .\build.ps1
 ```
 
-GitHub Actions builds the Windows installer, runs the checks and publishes a release. Builds can also be started manually from Actions.
-
-## Distribution
-
-The installer carries license notices and writes them beside the installed executable. **Licenses & source** is available in the app and system tray menu. Releases also include a Windows ZIP with notices and a matching source ZIP containing the pinned parser and bundled Rust dependency source archives. Npcap is not included and must be obtained separately. The self-contained Windows build does not require installing .NET.
-
-## License
-
-GPL-3.0. Component and source attribution is provided in [NOTICE.md](NOTICE.md).
-
-Beta: compatibility with your game configuration and the actual Discord display require verification in a live session. The Windows executable is not digitally signed; Windows may show an unknown-publisher warning.
+Public beta: compatibility with your configuration and the final Discord display should be checked in a live game session.

@@ -9,6 +9,11 @@ internal static class Program
     [STAThread]
     static void Main(string[] args)
     {
+        if (args.Contains("--self-test-presence")) {
+            try { var count = PresenceTests.Verify(); File.WriteAllText(Path.Combine(AppContext.BaseDirectory, "presence-test-result.txt"), $"PASS: {count} presence checks; no windows, capture or Discord connection."); }
+            catch (Exception e) { File.WriteAllText(Path.Combine(AppContext.BaseDirectory, "presence-test-result.txt"), "FAIL: " + e); Environment.Exit(1); }
+            return;
+        }
         ApplicationConfiguration.Initialize();
         if (args.Length == 2 && args[0] == "--write-notices") {
             ReleaseInfo.WriteNotices(Path.GetFullPath(args[1]));

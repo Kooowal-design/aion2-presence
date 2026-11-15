@@ -33,7 +33,7 @@ public partial class MainWindow : System.Windows.Window, INotifyPropertyChanged
     private string? notifiedVersion;
     private int percent;
     private string characterName = "—", characterClass = "—", level = "—", cp = "—", gs = "—", activity = "";
-    private string summary = "", profile = "", captureDetails = "", discordDetails = "", error = "";
+    private string summary = "", profile = "", memberList = "", captureDetails = "", discordDetails = "", error = "";
     private static readonly Brush Green = FrozenBrush(65, 221, 155), Cyan = FrozenBrush(71, 209, 230), Muted = FrozenBrush(157, 185, 205), Gold = FrozenBrush(245, 214, 143), Ink = FrozenBrush(238, 245, 251);
 
     public MainWindow(bool preview = false, bool startTray = false, EventWaitHandle? showWindow = null, bool renderOnly = false)
@@ -74,7 +74,13 @@ public partial class MainWindow : System.Windows.Window, INotifyPropertyChanged
     public string ClassText => L("Klasa");
     public string ActivityOptionText => L("Aktywność");
     public string ActivityHeading => L("AKTUALNA AKTYWNOŚĆ");
-    public string DisplayHeading => L("CO POKAZAĆ NA LIŚCIE");
+    public string DisplayHeading => L("WYŚWIETLANE POLA");
+    public string AutoModeText => L("Automatycznie: statystyki / aktywność");
+    public string StatsModeText => L("Wybrane statystyki");
+    public string ActivityModeText => L("Sama aktywność");
+    public string GameModeText => L("Tylko AION 2");
+    public string MemberListModeText => prefs.MemberListDisplay switch { "stats" => StatsModeText, "activity" => ActivityModeText, "game" => GameModeText, _ => AutoModeText };
+    public string ListLabel => L("Lista: ") + (memberList.Length > 0 ? memberList : L("Czekam na dane postaci…"));
     public string DiscordPreviewHeading => L("PODGLĄD DISCORDA");
     public string HelpHeading => L("PIERWSZE URUCHOMIENIE");
     public string ConnectionsHeading => L("POŁĄCZENIA");
@@ -110,6 +116,7 @@ public partial class MainWindow : System.Windows.Window, INotifyPropertyChanged
     public bool ShowGs { get => prefs.GearScore; set { prefs.GearScore = value; SettingsChanged(); } }
     public bool ShowActivity { get => prefs.Activity; set { prefs.Activity = value; SettingsChanged(); } }
     public bool ShowLevel { get => prefs.Level; set { prefs.Level = value; SettingsChanged(); } }
+    internal void SetMemberListMode(string mode) { prefs.MemberListDisplay = mode; SettingsChanged(); }
     public bool AutoStart {
         get => prefs.AutoStart;
         set {
@@ -174,12 +181,13 @@ public partial class MainWindow : System.Windows.Window, INotifyPropertyChanged
         var data = new LiveData(1, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), true, new CharacterProfile("Lyra", "Cleric", 1304, 45, 86320, 1520), "Shugo Festival · Defend Shugo Merchants", "", true);
         SetCharacter(data); var payload = PresenceApp.ActivityFor(data, prefs, 1);
         summary = payload["details"]?.GetValue<string>() ?? ""; profile = payload["state"]?.GetValue<string>() ?? "";
+        memberList = PresenceFormat.MemberListText(payload);
         captureDetails = "Podgląd lokalny — fikcyjne dane, bez odczytu gry."; discordDetails = "Status nie jest wysyłany na Discorda.";
     }
     private void RefreshLive()
     {
         if (app is null) return;
-        SetCharacter(app.SourceFresh ? app.Data : null); summary = app.Preview; profile = app.ProfilePreview;
+        SetCharacter(app.SourceFresh ? app.Data : null); summary = app.Preview; profile = app.ProfilePreview; memberList = app.MemberListPreview;
         captureDetails = app.CaptureStatus; discordDetails = app.Status; error = app.LastError; Changed();
     }
     internal void ShowPage(string page) { selectedPage = page; Changed(); }
@@ -257,6 +265,11 @@ public partial class MainWindow : System.Windows.Window, INotifyPropertyChanged
     private void LanguageClick(object sender, RoutedEventArgs e) { var button = (System.Windows.Controls.Button)sender; button.ContextMenu.PlacementTarget = button; button.ContextMenu.IsOpen = true; }
     private void EnglishClick(object sender, RoutedEventArgs e) => SetLanguage("en");
     private void PolishClick(object sender, RoutedEventArgs e) => SetLanguage("pl");
+    private void MemberListModeClick(object sender, RoutedEventArgs e) { var button = (System.Windows.Controls.Button)sender; button.ContextMenu.PlacementTarget = button; button.ContextMenu.IsOpen = true; }
+    private void AutoModeClick(object sender, RoutedEventArgs e) => SetMemberListMode("auto");
+    private void StatsModeClick(object sender, RoutedEventArgs e) => SetMemberListMode("stats");
+    private void ActivityModeClick(object sender, RoutedEventArgs e) => SetMemberListMode("activity");
+    private void GameModeClick(object sender, RoutedEventArgs e) => SetMemberListMode("game");
     internal void RenderPreview(string path, double scale = 1)
     {
         UpdateLayout(); Dispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle);

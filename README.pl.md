@@ -1,107 +1,116 @@
 # AION2 Presence
 
-<img src="AionPresence/Assets/logo.png" width="96" alt="AION2 Presence logo">
+<img src="AionPresence/Assets/logo.png" width="88" alt="AION2 Presence logo">
 
 **Polski** | [English](README.md)
 
-Samodzielna aplikacja Windows pokazująca Twoją postać, statystyki i aktualną aktywność w AION 2 na Discordzie.
+**Twoja postać i aktywność w AION 2 na Discordzie.**
 
-Domyślny tekst pod nickiem:
+Bezpłatna aplikacja Windows z otwartym kodem, pokazująca statystyki postaci i to, co robisz w grze. Działa samodzielnie w tle. Nie wymaga uruchomionego DPS metera, tokena Discord ani konfiguracji w Developer Portal.
 
-`Lyra · Cleric · CP 86.32k · GS 1520 · In game`
+**[Pobierz na Windows](https://github.com/Kooowal-design/aion2-presence/releases/tag/v0.2.0-beta.11)** · **[Wszystkie wersje](https://github.com/Kooowal-design/aion2-presence/tags)** · **[Zgłoś błąd](https://github.com/Kooowal-design/aion2-presence/issues/new/choose)**
 
-Działa w tle, odczytując informacje o Twojej postaci przez Npcap i aktualizując status Discorda.
+## Jak wygląda na Discordzie
+
+![Lista osób, podgląd po najechaniu i profil z własnymi ikonami Presence](docs/discord-presence-v11-pl.png)
+
+Na **liście osób** mogą pojawiać się wybrane statystyki albo aktualna aktywność. **Podgląd po najechaniu** rozwija wybrany tekst listy, a **karta aktywności w profilu** zachowuje wybrane dane postaci i aktywność w dwóch osobnych liniach.
+
+```text
+Lyra · Spiritmaster · CP 86.32k · GS 1520 · Lv 45
+Crafting
+```
+
+Ilustracje używają fikcyjnych nazw i statystyk. Discord decyduje o układzie, skracaniu tekstu oraz pierwszeństwie aktywności. Podpisy ilustracji są po polsku. Nazwy klas i statusy na pokazanej karcie pozostają zgodne z angielskim tekstem aplikacji.
+
+## Wybierz, co pokazywać
+
+Każde pole ma własny przełącznik: **nick, klasa, CP, GS, level i aktywność**. Wybrane dane postaci trafiają do pierwszej linii profilu, a aktywność do drugiej. Level pojawia się w pierwszej linii, jeśli jest włączony.
+
+| Tryb listy osób | Tekst pod nickiem |
+| --- | --- |
+| **Automatycznie — domyślnie** | Wybrane statystyki podczas zwykłej gry; sama rozpoznana aktywność, gdy trwa. |
+| **Wybrane statystyki** | Wybrane dane postaci, także podczas aktywności. |
+| **Sama aktywność** | Aktualna aktywność albo `AION 2`, jeśli żadna nie została rozpoznana. |
+| **Tylko AION 2** | Sama nazwa `AION 2`; wybrane szczegóły pozostają w profilu. |
+
+![Automatycznie: statystyki, następnie aktywność i ponownie statystyki](docs/discord-auto-v11-pl.png)
+
+Wyłączenie **Aktywności** ukrywa jej tekst i małą ikonę oraz zatrzymuje automatyczne przełączanie listy na aktywność. Ukryte pola tekstowe znikają również z podpowiedzi po najechaniu na grafikę. Jeśli nie wybierzesz żadnych pól, lista pokazuje `AION 2`.
+
+## Własne ikony klas i aktywności
+
+![Dziewięć własnych ikon klas AION2 Presence](docs/presence-classes-v11-pl.png)
+
+Duża grafika oznacza klasę. Zestaw zawiera Gladiatora, Templara, Rangera, Assassina, Sorcerera, Spiritmastera, Clerica, Chantera i Brawlera. Grafika Brawlera jest przygotowana na obsługiwane wersje gry i nie oznacza dostępności klasy w każdym regionie.
+
+![Ikony bossa, dungeona, craftingu, zbierania i Shugo](docs/presence-activities-v11-pl.png)
+
+Mały znaczek w rogu **grafiki klasy wewnątrz karty gry** oznacza walkę z bossem, dungeon, crafting, gathering lub Shugo. Podczas zwykłej gry małego znaczka nie ma. **Nie zastępuje on kropki online/idle/DND przy avatarze użytkownika.** Grafiki znajdują się w publicznym repozytorium tego projektu i są wczytywane przez Discorda.
 
 ## Wykrywane aktywności
 
-| Aktywność | Przykładowy status na Discordzie |
+| Aktywność | Przykładowy status |
 | --- | --- |
-| Rozpoznany dungeon | `Nazwa dungeona (poziom trudności)` |
-| Walka z rozpoznanym bossem w dungeonie | `Nazwa dungeona (poziom trudności) · Fighting Nazwa bossa` |
-| Walka z rozpoznanym bossem poza dungeonem | `Fighting Nazwa bossa` |
+| Rozpoznany dungeon | `Dungeon name (difficulty)` |
+| Walka z rozpoznanym bossem w dungeonie | `Dungeon name (difficulty) · Fighting Boss name` |
+| Walka z rozpoznanym bossem otwartego świata | `Fighting Boss name` |
 | Zbieranie surowców | `Gathering` |
-| Crafting | `Crafting` |
-| Konkurencja Shugo — eksperymentalnie, 9 konkurencji obu frakcji | `Shugo Festival · Defend Shugo Merchants` |
-| Brak rozpoznanej aktywności | `In game` |
+| Crafting, w tym automatyczne serie | `Crafting` |
+| Konkurencja Shugo — eksperymentalnie, obie frakcje | `Shugo Festival · Defend Shugo Merchants` |
+| Brak rozpoznanej aktywności | `AION 2` albo wybrane statystyki w trybie automatycznym |
 
-Nazwy dungeona i bossa pochodzą z rozpoznanych danych gry. Walka z bossem ma pierwszeństwo przed zbieraniem i craftingiem. AFK i lokacje otwartego świata nie są wykrywane. Tekst aktywności wysyłany na Discord pozostaje angielski.
+Nazwy dungeonów i bossów pochodzą z rozpoznanych danych gry. **Wykrywanie bossa zależy od danych NPC dołączonych do aplikacji oraz odebranych danych walki. Niektóre bossy mogą nie zostać rozpoznane.** Dotyczy to zarówno dungeonów, jak i otwartego świata.
 
-Nazwa dungeona wymaga odebrania komunikatu wczytania mapy. Sama informacja o grupie nie jest traktowana jako Twoja aktualna lokalizacja. Po uruchomieniu aplikacji w trakcie sesji nazwa może pojawić się dopiero przy kolejnym wczytaniu mapy; sygnał wyjścia lub przejścia czyści poprzednią lokalizację.
+Nazwa dungeona wymaga odebrania komunikatu wczytania mapy. Sama informacja o grupie nie potwierdza lokalizacji. Po uruchomieniu aplikacji w trakcie sesji może być potrzebne kolejne wczytanie mapy. Wyjście lub przejście czyści poprzednią lokalizację.
 
-## Przykłady na Discordzie
+Crafting włącza się po rozpoczęciu wytwarzania, także przy automatycznych seriach. Samo otwarcie okna przepisów nie uruchamia statusu. Nie ma konfiguracji dla każdego przepisu; Substance Morph jest pomijany. Zobacz [zakres sprawdzenia i ograniczenia](docs/CRAFTING.md).
 
-![Lista osób, podgląd po najechaniu i profil z fikcyjnymi danymi](docs/discord-examples.png)
+Eksperymentalna obsługa Shugo obejmuje dziewięć nazwanych konkurencji na mapach Elyosów i Asmodian. Udział jest rozpoznawany z mapy konkurencji lub aktywnego runu; sam harmonogram nie wystarcza. Szczegóły: [wykrywanie Shugo](docs/SHUGO.md).
 
-Ilustracja odwzorowuje zaobserwowany układ Discorda, używając fikcyjnych nazw, awatarów i statystyk. Pokazuje **listę osób**, **podgląd po najechaniu** bez informacji głosowych oraz **kartę aktywności w profilu**. CP/GS występują raz w liniach tekstu profilu; druga linia pokazuje level i aktywność. Discord może ucinać długi tekst. To ilustracja, nie gwarancja identycznego wyglądu w każdym kliencie.
+Walka z bossem ma pierwszeństwo przed zbieraniem i craftingiem. **Nie wykrywamy AFK ani nazw lokacji otwartego świata.** Tekst aktywności na Discordzie pozostaje angielski.
 
 ## Instalacja
 
-1. Otwórz **[Releases](https://github.com/Kooowal-design/aion2-presence/releases)** i pobierz najnowszy instalator.
-2. Zakończ działającą aplikację z zasobnika. Pobierz `Aion2Presence-Setup.exe`, uruchom, wybierz folder instalacji i kliknij **Install / Zainstaluj**.
-3. Uruchom **AION2 Presence** ze skrótu na pulpicie lub z menu Start.
-4. Na tym samym komputerze muszą działać AION 2 i Discord desktop. Do odczytu wymagany jest [Npcap](https://npcap.com/#download). Jeśli jest już zainstalowany, nie trzeba instalować go ponownie.
-5. Udostępnianie aktywności w Discordzie musi być włączone. Nie trzeba tworzyć aplikacji Discord, podawać tokena ani logować konta Discord w tej aplikacji.
+1. Otwórz **[bieżące wydanie](https://github.com/Kooowal-design/aion2-presence/releases/tag/v0.2.0-beta.11)** i pobierz **Aion2Presence-Setup.exe**. **[Wszystkie wersje](https://github.com/Kooowal-design/aion2-presence/tags)** znajdziesz w Tags; opcja **Downloads** przy danej wersji prowadzi do plików wydania.
+2. Przy ręcznej aktualizacji zakończ działającą kopię z menu ikony przy zegarku. Uruchom instalator, wybierz folder i kliknij **Zainstaluj**.
+3. Włącz **AION2 Presence** ze skrótu na pulpicie lub z menu Start.
+4. Uruchom AION 2 i Discord desktop na tym samym komputerze. Wymagany jest [Npcap](https://npcap.com/#download); istniejącą instalację można wykorzystać ponownie.
+5. Włącz udostępnianie aktywności w Discordzie. Nie trzeba tworzyć aplikacji Discord, podawać tokena ani logować się przez Presence.
 
-**Jeśli przy próbie uruchomienia AION 2 pojawia się błąd:** zakończ AION2 Presence przez menu ikony przy zegarku, uruchom **najpierw AION 2**, poczekaj na pojawienie się okna gry, a dopiero potem włącz **AION2 Presence**. W takim przypadku wyłącz **Start z Windows** i zachowuj tę kolejność również przy kolejnych uruchomieniach.
+**Jeśli AION 2 zgłasza błąd przy uruchamianiu:** zakończ Presence z zasobnika, uruchom **najpierw AION 2**, a potem Presence. Jeśli potrzebujesz tej kolejności, wyłącz **Start z Windows**.
 
-ExitLag można pozostawić włączony. Odczyt obejmuje adaptery sieciowe i loopback.
+ExitLag może pozostać włączony. Odczyt obsługuje adaptery sieciowe i loopback. Na komputerze w chmurze gra, Discord i Presence muszą działać w tej samej sesji Windows.
 
-Jeśli korzystasz z komputera w chmurze, zainstaluj i uruchom aplikację wewnątrz tej samej sesji Windows, w której działają gra i Discord.
+Jeśli brakuje danych postaci, poczekaj na wejście do świata lub teleport. Nieodebrane dane pozostają pominięte. Używaj jednej aplikacji wysyłającej status AION 2, aby statusy się nie nadpisywały.
 
-Jeśli program wystartował po zalogowaniu postaci, dane mogą pojawić się dopiero po kolejnym komunikacie tożsamości z gry (np. wejściu postaci do świata lub teleportacji). Nie zgaduje CP ani GS — nieodebrane wartości pozostają ukryte.
+Aplikacja i instalator obsługują **English / Polski**. Nie trzeba oddzielnie instalować .NET. Plik Windows nie ma obecnie podpisu cyfrowego; system może pokazać nieznanego wydawcę.
 
-Uruchom tylko jedną aplikację wysyłającą status AION 2 do Discorda, aby statusy nie nadpisywały się wzajemnie.
+## Aktualizacje i zgłoszenia
 
-## Co jest automatyczne
+Presence sprawdza wydania tego projektu przy starcie i co sześć godzin. Można też sprawdzić je ręcznie. Zielony panel **Aktualna wersja** pokazuje bieżącą wersję, a złoty **Dostępna aktualizacja** udostępnia **Pobierz i zainstaluj**.
 
-- Nazwa własnej postaci, klasa, level, CP i GS, gdy gra dostarczy dane.
-- Podczas walki: rozpoznany dungeon, tryb i boss. Po walce sam dungeon; poza rozpoznaną instancją `In game`.
-- Zbieranie i crafting, w tym automatyczne serie.
-- Zachowanie pełniejszych statystyk w karcie profilu i podpowiedzi obrazu.
-- Usunięcie statusu po zamknięciu gry, utracie silnika lub wyłączeniu aplikacji.
-- Chowanie okna do zasobnika. Autostart z Windows jest opcjonalny.
+Plik jest weryfikowany sumą SHA-256 przed zamknięciem aplikacji i otwarciem instalatora. Ustawienia i folder instalacji zostają zachowane. Instalacja wymaga potwierdzenia. Nieudane sprawdzanie aktualizacji nie przerywa odczytu gry. Wersje sprzed beta.5 wymagają jednej ręcznej aktualizacji, aby otrzymać updater.
 
-Instalator i aplikacja obsługują **English / Polski**. Wybór języka jest zapamiętywany; domyślny jest angielski.
+Użyj **Zgłoś błąd** lub **Zaproponuj funkcję** w aplikacji lub menu zasobnika albo otwórz **[GitHub Issues](https://github.com/Kooowal-design/aion2-presence/issues/new/choose)**. Formularz błędu uzupełnia tylko wersję aplikacji; nic nie jest wysyłane automatycznie i nie są dołączane dane postaci ani logi. Wysłanie wymaga konta GitHub. Można pisać po polsku lub angielsku.
 
-Zbieranie jest rozpoznawane po komunikatach rozpoczęcia i wyniku; status wygasa po 15/8 sekundach bez kolejnego zdarzenia. Walka z bossem ma pierwszeństwo.
+## Prywatność i zasady gry
 
-Crafting włącza się po rozpoczęciu wytwarzania i utrzymuje przez automatyczną serię. Samo otwarcie okna przepisów go nie aktywuje. Nie wymaga konfiguracji dla każdego przepisu. Substance Morph jest pomijany. Zobacz [zakres sprawdzenia i ograniczenia](docs/CRAFTING.md).
+Brak konta aplikacji, serwera aplikacji, telemetryki i uploadu logów walk. Zwykłe Presence nie zapisuje surowych pakietów. Odczytuje ruch gry przez Npcap i przekazuje wybrane informacje do lokalnego Discorda. Widoczność zależy od ustawień udostępniania aktywności Discorda.
 
-Eksperymentalna obsługa Shugo rozpoznaje dziewięć konkurencji na mapach Elyosów i Asmodian: Jump Jump, Mysterious Track, Odyle Flight Frenzy, Defend Shugo Merchants, Not This Tile?, Wraith Evasion, Hidden Lugi, Goldrin's Treasure oraz Up! Up! Up! Status zawiera nazwę konkurencji, po rozpoznaniu jej mapy lub aktywnego runu. Sam harmonogram nie uruchamia statusu. Termin runu jest ograniczony do 20 minut; bez terminu status trwa do 10 minut, a sam odczyt mapy daje maksymalnie 20 minut. Koniec runu lub wyjście czyści status. Obsługa wymaga dalszego sprawdzenia w grze; szczegóły i źródła: [wykrywanie Shugo](docs/SHUGO.md).
+Sprawdzanie aktualizacji kontaktuje się z GitHubem bez wysyłania danych postaci, ustawień i logów. GitHub otrzymuje zwykłe informacje połączenia, np. adres IP. Ustawienia zapisują się w `%LOCALAPPDATA%\Aion2Presence`.
 
-Poza rozpoznanym dungeonem/bossem, zbieraniem, craftingiem i tym runem Shugo status to `In game`. **Nie rozpoznajemy lokacji otwartego świata ani AFK.**
+Opcjonalna, oddzielnie uruchamiana [diagnostyka craftingu](docs/CRAFTING-DIAGNOSTICS.md) zapisuje przychodzące dane gry lokalnie i może zawierać dane postaci oraz czat. Nie wysyła ich automatycznie i nie działa w zwykłym trybie aplikacji.
 
-Discord dostaje `status_display_type: 2` (Details), co zgodnie z dokumentacją wybiera szczegóły jako tekst na liście członków. Klient Discorda decyduje o miejscu wyświetlania i skracaniu długiego tekstu. Lokalny podgląd nie jest dowodem, że inny użytkownik widzi cały tekst. Ten efekt wymaga sprawdzenia w realnym Discordzie.
+Presence korzysta z pasywnego odczytu Npcap, tak jak DPS metery oparte na Npcap. Nie modyfikuje plików ani pamięci gry, nie wstrzykuje pakietów i nie automatyzuje rozgrywki. To nieoficjalny projekt społecznościowy — korzystasz na własną odpowiedzialność i zgodnie z zasadami gry.
 
-## Zgłoszenia i pomysły
+Aby odinstalować: zakończ program z zasobnika, wyłącz autostart, usuń folder instalacji, folder ustawień i skróty z pulpitu oraz menu Start.
 
-Opcje **Zgłoś błąd** i **Zaproponuj funkcję** w aplikacji oraz menu przy zegarku otwierają formularze GitHub. Przy błędzie uzupełniana jest wyłącznie wersja programu. Do wysłania zgłoszenia potrzebujesz konta GitHub. Nic nie jest wysyłane automatycznie; aplikacja nie dołącza danych postaci, przechwyconych danych ani logów. Możesz pisać po polsku lub angielsku.
+## Kod i licencja
 
-Formularze są też dostępne bezpośrednio w [Issues](https://github.com/Kooowal-design/aion2-presence/issues/new/choose). Przed dodaniem zrzutu usuń z niego prywatne informacje.
+GPL-3.0. Informacje o komponentach znajdują się w [NOTICE.md](NOTICE.md). **Licencje i źródła** są dostępne w aplikacji i zasobniku. Wydania zawierają licencje, sumy SHA-256 i pasujące archiwum źródeł z przypiętym parserem oraz źródłami zależności Rust. Npcap nie jest dołączony.
 
-## Aktualizacje
-
-Aplikacja sprawdza publiczne wydania tego projektu na GitHubie przy uruchomieniu i co sześć godzin. Informacja o nowej wersji pojawia się w oknie oraz jako powiadomienie przy zegarze. Aktualizacje można też sprawdzić ręcznie z menu ikony.
-
-Wybierz **Pobierz i zainstaluj**, aby rozpocząć aktualizację. Aplikacja pobierze instalator z tego repozytorium, sprawdzi sumę SHA-256, zakończy działającą kopię i otworzy instalator. Ustawienia i folder instalacji są zachowywane. Instalacja wymaga Twojego potwierdzenia. Wersja beta sprawdza również nowsze wydania beta. Nieudane sprawdzenie nie przerywa odczytu gry.
-
-Wersje starsze niż 0.2.0-beta.5 wymagają jednorazowej ręcznej aktualizacji, aby otrzymać tę funkcję. Pliki nadal nie mają podpisu cyfrowego; sprawdzenie sumy kontrolnej go nie zastępuje.
-
-## Prywatność i dane
-
-Brak serwera aplikacji, konta, telemetryki i automatycznych uploadów. Zwykła aplikacja nie zapisuje surowych pakietów. Osobno uruchamiana diagnostyka craftingu zapisuje pełne przychodzące dane gry lokalnie; mogą one zawierać dane postaci i czat. Niczego nie wysyła automatycznie. Zobacz [zakres diagnostyki](docs/CRAFTING-DIAGNOSTICS.md). Parser czyta ruch przez Npcap, a aplikacja przekazuje wybrane informacje do lokalnego klienta Discorda. Brakujące pola są pomijane.
-
-Sprawdzanie aktualizacji łączy się z GitHubem przy starcie i co sześć godzin. Pobieranie uruchamiasz samodzielnie. Nie wysyłamy danych postaci, ustawień ani logów; GitHub otrzymuje standardowe informacje o połączeniu, takie jak adres IP.
-
-Ustawienia zapisują się w `%LOCALAPPDATA%\Aion2Presence`. Odinstalowanie: zakończ aplikację z zasobnika, wyłącz autostart i usuń ten folder oraz skrót AION2 Presence z menu Start.
-
-## Zasady gry
-
-AION2 Presence korzysta z pasywnego odczytu ruchu sieciowego przez Npcap — na tej samej zasadzie co DPS metery oparte na Npcap. Odczytuje dane gry, aby aktualizować aktywność na Discordzie, bez modyfikowania plików ani pamięci gry, wstrzykiwania pakietów czy automatyzacji rozgrywki. To nieoficjalny projekt społecznościowy — korzystasz z niego na własną odpowiedzialność, z uwzględnieniem zasad gry.
-
-## Budowanie
-
-Wymagania tylko na komputerze programistycznym: .NET SDK 10, Rust stable i linker dla wybranego celu Windows.
+Do budowania: .NET SDK 10, Rust stable i linker dla docelowego Windows.
 
 ```powershell
 git clone --recurse-submodules https://github.com/Kooowal-design/aion2-presence.git
@@ -109,14 +118,4 @@ cd aion2-presence
 .\build.ps1
 ```
 
-GitHub Actions buduje instalator Windows, uruchamia testy i publikuje wydanie. Budowanie można uruchomić również ręcznie w Actions.
-
-## Dystrybucja
-
-Instalator zawiera informacje licencyjne i zapisuje je obok programu. Opcja **Licencje i źródła** jest dostępna w aplikacji i menu przy zegarku. Wydania zawierają też ZIP programu z licencjami oraz ZIP odpowiadających mu źródeł z przypiętym parserem i archiwami źródeł zależności Rust. Npcap nie jest dołączany — pobiera się go osobno. Paczka Windows zawiera środowisko .NET; nie trzeba go instalować.
-
-## Licencja
-
-GPL-3.0. Informacje o komponentach i pochodzeniu kodu: [NOTICE.md](NOTICE.md).
-
-Pierwsza wersja: zgodność z konkretną konfiguracją gry i wygląd statusu wymagają sprawdzenia w rzeczywistej sesji.
+Publiczna beta: zgodność z konfiguracją i końcowy wygląd w Discordzie należy sprawdzić w rzeczywistej sesji gry.

@@ -4,6 +4,11 @@ public static class UiLanguage
 {
     public static string Language { get; set; } = Preferences.Load().Language == "pl" ? "pl" : "en";
     private static readonly (string Pl, string En)[] Messages = [
+        ("WYŚWIETLANE POLA", "DISPLAYED FIELDS"),
+        ("Automatycznie: statystyki / aktywność", "Auto: stats / activity"),
+        ("Wybrane statystyki", "Selected stats"), ("Sama aktywność", "Activity only"), ("Tylko AION 2", "AION 2 only"),
+        ("Lista: ", "Member list: "),
+        ("Discord potwierdził ustawienie listy osób", "Discord confirmed the member-list setting"),
         ("Start", "Home"), ("Wyświetlanie", "Display"), ("Pomoc", "Help"),
         ("PODGLĄD LOKALNY\nFikcyjne dane", "LOCAL PREVIEW\nDemo data"),
         ("Stan aktualizacji", "Update state"), ("Podgląd lokalny", "Local preview"),

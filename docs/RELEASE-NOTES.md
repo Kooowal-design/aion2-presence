@@ -1,38 +1,17 @@
-Public beta for Windows · English / Polski
+Choose what people see below your name in Discord, with new original class icons and activity badges.
 
-## New in 0.2.0-beta.10
+- **Auto:** selected character stats while in game; the recognized activity takes over the member list during a dungeon, boss fight, crafting, gathering or Shugo competition.
+- **Four display modes:** Auto, Selected stats, Activity only and AION 2 only.
+- **All six field switches remain:** character name, class, CP, GS, level and activity. They also control the text in the profile and artwork tooltip.
+- **Two profile lines:** selected character stats on the first; activity on the second. Level moves to the first line when enabled.
+- **Original artwork:** nine class icons and five activity badges. Gladiator has one greatsword; Shugo uses a face badge. Normal in-game status has no small badge.
+- Turning Activity off hides its text and badge and prevents automatic switching to activity.
+- The capture engine and supported activities are unchanged from beta.10.
 
-- Added Crafting activity detection, including automatic batches.
-- Crafting activates when production starts. Opening the recipe window alone does not activate it.
-- Detection is shared across recipes and professions, without per-item configuration.
-- Keeps the activity continuous between attempts and clears shortly after the last result or cancellation.
-- Excludes Substance Morph. Combat retains priority; map changes clear crafting.
-- Fixed a diagnostic interruption caused by Windows readers blocking summary-file replacement.
-- Added offline trace replay and regression coverage. Private user captures are not published.
+Download **Aion2Presence-Setup.exe**, or choose **Download and install** in the app. For a manual update, exit the previous copy from its system tray menu first. Settings and the installation folder are retained.
 
-Download **Aion2Presence-Setup.exe**, or select **Download and install** in the app.
-Exit the previous copy from its system tray menu before installing manually.
+The small activity badge appears on the class artwork in the game activity card. Discord's online/idle/DND indicator beside your avatar is unchanged. Discord controls text truncation and activity priority.
 
-## Polski
+**Polski:** Nowe tryby listy osób, własne ikony klas i oznaczenia aktywności. Automatycznie: wybrane statystyki podczas zwykłej gry, sama aktywność podczas rozpoznanego zajęcia. Wszystkie sześć przełączników pozostaje dostępnych. Po wyłączeniu Aktywności aplikacja nie przełącza listy na jej nazwę i nie pokazuje małego znaczka. Odczyt gry pozostaje taki jak w beta.10.
 
-Dodano wykrywanie **Crafting**, w tym automatycznych serii.
-Status włącza się po rozpoczęciu wytwarzania; samo otwarcie okna przepisów go nie aktywuje.
-Wykrywanie jest wspólne dla przepisów i profesji, bez konfiguracji każdego przedmiotu.
-Status utrzymuje się pomiędzy próbami serii i znika po ostatnim wyniku lub anulowaniu.
-Substance Morph nie uruchamia statusu.
-
-Naprawiono również przerwanie diagnostyki z błędem „Odmowa dostępu” podczas podmiany raportu.
-Prywatne komunikaty z diagnostyki nie są publikowane na GitHub.
-
-Pobierz **Aion2Presence-Setup.exe** lub wybierz **Pobierz i zainstaluj** w aplikacji.
-Folder instalacji, ustawienia i skróty zostają zachowane.
-
-## Optional full diagnostic
-
-The separate **Aion2Presence-Crafting-Diagnostic.zip** records complete incoming game data
-locally and may include character information and chat. No automatic upload occurs.
-Normal Presence does not enable recording.
-
-Npcap, AION 2 and Discord desktop are required for normal Presence on the same computer.
-Matching source, notices and SHA-256 checksums are attached. The Windows executable remains unsigned.
-
+Npcap, AION 2 and Discord desktop are required on the same computer. The executable remains unsigned. Matching source, notices and SHA-256 checksums are attached. The optional diagnostic is separate; normal Presence does not record incoming game data.
