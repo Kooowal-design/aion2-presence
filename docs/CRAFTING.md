@@ -7,7 +7,7 @@ There were 18 results: potion cancellation and a naturally completed three-item
 potion batch were included. The cooking recording stopped during its sixth attempt,
 so cooking cancellation/natural final completion were not captured separately.
 
-After installing beta.10, the tester confirmed on 2026-11-15 that the Crafting status works while making food in the live game. Separate live confirmation of cooking cancellation/final completion and other professions is still outstanding.
+After installing beta.10, live use on 2026-11-15 confirmed Crafting while making both food and a bracelet. The same decoder recognized both; it is not restricted to consumables.
 
 ## Decoder
 
@@ -24,10 +24,7 @@ After installing beta.10, the tester confirmed on 2026-11-15 that the Crafting s
   handoff and a confirmed gathering start also clear it. Boss combat takes priority.
 
 Recipes are parsed as varints; no per-item list or recipe-specific timer is used.
-Profession values 1–5 are accepted, but only alchemy/cooking (4/5) were in this
-capture. Other professions, unusually slow attempts exceeding 60 seconds and
-attribution among nearby crafters still need live validation. This is not a claim
-that every recipe and profession was tested.
+Profession values 1–5 are accepted without a recipe whitelist. The capture used to develop the decoder covered values 4/5; subsequent live bracelet crafting also worked. Remaining edge cases include unusually slow attempts exceeding 60 seconds and attribution among nearby crafters.
 
 ## Replay without live collection
 

@@ -1,0 +1,33 @@
+name: Update release description
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/RELEASE-NOTES.md'
+      - '.github/workflows/release-notes.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  notes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Sync notes for the current published version
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          [xml]$project = Get-Content AionPresence/AionPresence.csproj
+          $tag = "v$($project.Project.PropertyGroup.Version)"
+          gh release view $tag --json tagName *> $null
+          if ($LASTEXITCODE -ne 0) {
+            Write-Host "This version is not published yet; its build will include these notes."
+            exit 0
+          }
+          gh release edit $tag --notes-file docs/RELEASE-NOTES.md
+          if ($LASTEXITCODE -ne 0) { throw 'Release description update failed' }
+

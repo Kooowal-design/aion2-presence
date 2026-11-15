@@ -48,8 +48,8 @@ steps and before/after input prompts. This tool is passive and does not click in
 
 This is a diagnostic package, separate from the experimental crafting detector
 introduced in beta.10. Complete bytes let us revisit unknown fields and replay parsing
-without collecting the same missing payload again. Potion and food traces share a
-lifecycle; no per-item configuration is required. They cannot prove every profession
+without collecting the same missing payload again. Captured recipes share a
+lifecycle; no per-item configuration is required. The initial traces cannot prove every profession
 behaves identically. See [decoder evidence and limits](CRAFTING.md).
 Beta.10 also fixes Windows report-reader sharing and retries transient replacement errors.
 Source and dependency licenses are supplied with the release.
