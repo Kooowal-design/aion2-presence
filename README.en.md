@@ -20,7 +20,7 @@ The app runs in the background, reads character information through Npcap and up
 | Fighting a recognized boss in a dungeon | `Dungeon name (difficulty) · Fighting Boss name` |
 | Fighting a recognized boss outside a dungeon | `Fighting Boss name` |
 | Gathering resources | `Gathering` |
-| Workstation crafting — potions and food | `Crafting` |
+| Workstation crafting | `Crafting` |
 | Shugo competition — experimental, 9 competitions for both factions | `Shugo Festival · Defend Shugo Merchants` |
 | No recognized activity | `In game` |
 
@@ -58,14 +58,14 @@ The installer and app support **English / Polski**. Use the language selector to
 
 - Your character's name, class, level, CP and GS, when supplied by the game.
 - During combat: the recognized dungeon, difficulty and boss. After combat: the dungeon. Outside a recognized instance: `In game`.
-- Gathering and workstation crafting, including automatic potion and food batches.
+- Gathering and workstation crafting, including automatic batches.
 - Additional stats in the profile activity card and image tooltip.
 - Activity cleared when the game closes, the capture engine stops responding or the app exits.
 - Minimize to the system tray, with optional launch at Windows startup.
 
 Gathering is detected from start/result messages and expires after 15/8 seconds without another event. Boss combat takes priority.
 
-Crafting activates when production starts and stays active throughout an automatic batch. Opening the recipe window alone does not activate it. Potions and food use the same detection; no per-recipe setup is needed. Cooking has also been confirmed in live use. Substance Morph is excluded. Other professions still need live validation. See [crafting evidence and limits](docs/CRAFTING.md).
+Crafting activates when production starts and stays active throughout an automatic batch. Opening the recipe window alone does not activate it. No per-recipe setup is needed. Substance Morph is excluded. See [validation scope and limitations](docs/CRAFTING.md).
 
 Experimental Shugo support identifies nine competitions on Elyos and Asmodian maps: Jump Jump, Mysterious Track, Odyle Flight Frenzy, Defend Shugo Merchants, Not This Tile?, Wraith Evasion, Hidden Lugi, Goldrin's Treasure and Up! Up! Up! The status includes the competition name after a known venue map or active run is received. Schedule broadcasts alone do not activate it. Run deadlines are capped at 20 minutes; without a deadline the lease is 10 minutes, and map-only detection lasts at most 20 minutes. Completion or departure clears the event. Live verification is still needed; see [Shugo detection and sources](docs/SHUGO.md).
 
