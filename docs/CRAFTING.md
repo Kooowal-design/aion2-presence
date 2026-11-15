@@ -7,6 +7,8 @@ There were 18 results: potion cancellation and a naturally completed three-item
 potion batch were included. The cooking recording stopped during its sixth attempt,
 so cooking cancellation/natural final completion were not captured separately.
 
+After installing beta.10, the tester confirmed on 2026-11-15 that the Crafting status works while making food in the live game. Separate live confirmation of cooking cancellation/final completion and other professions is still outstanding.
+
 ## Decoder
 
 - 6F 8D carries private attempt/minigame details and a recipe varint.
