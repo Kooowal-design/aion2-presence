@@ -30,14 +30,28 @@ After installing beta.10, live use on 2026-11-15 confirmed Crafting while making
 Recipes are parsed as varints; no per-item list or recipe-specific timer is used.
 Profession values 1–5 are accepted without a recipe whitelist. The capture used to develop the decoder covered values 4/5; subsequent live bracelet crafting also worked. Remaining edge cases include unusually slow attempts exceeding 60 seconds and attribution among nearby crafters.
 
-## Additional recipes reported missing
+## ALT+G path reported missing
 
-Live reports on beta.13 identified missing Crafting for Soulstone, Manastone,
-crafting scrolls, Magic Crystal in Handicrafting, and a bow, while potion crafting
-still worked. No recording of those particular attempts is available. Beta.14
-removes the unsupported minimum detail length and adds the confirmed-local-actor
-start path; these are parser corrections, not proof of live coverage for every
-reported recipe. Verification after installation remains necessary.
+Initial live reports identified missing Crafting for Soulstone, Manastone,
+crafting scrolls, Magic Crystal in Handicrafting, and a bow. Follow-up testing
+clarified the distinction: those recipes were recognized at crafting stations,
+while crafting through ALT+G was not recognized, including potions. This points
+to the production path rather than a per-recipe coverage issue. The exact wire
+difference has not yet been established; a separate protocol is not assumed.
+
+Beta.14 removes an unsupported minimum detail length and adds the
+confirmed-local-actor start path. It is not a confirmed fix for ALT+G.
+Detection does not inspect windows, keyboard shortcuts or station interaction;
+it consumes incoming game frames indicating actual production.
+
+A short, opt-in [ALT+G diagnostic](diagnostics/Aion2Presence-AltG-Diagnostic.zip)
+guides one automatic batch of three items, with no station comparison required.
+Extract it on the game PC and run Start-AltG.cmd. It downloads the existing
+beta.14 diagnostic engine and verifies a pinned SHA-256 before starting it.
+Menu-opening markers only help analyze the recording; they are not a proposed
+detection mechanism. The resulting ZIP can contain private game data and must
+be shared privately, never in a public issue. Nothing uploads automatically.
+See the [helper instructions and source](diagnostics/altg/README.txt).
 
 ## Replay without live collection
 
