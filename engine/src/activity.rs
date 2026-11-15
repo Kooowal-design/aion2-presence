@@ -175,6 +175,21 @@ mod tests {
         assert_eq!(s.describe("In game",0,4001),"In game");
     }
     #[test]
+    fn premium_zero_token_crafting_works_without_any_menu_or_keyboard_signal() {
+        let mut s=Activity::default();
+        s.observe(&packet([0x6f,0x8d],&[0,5,0]),1000);
+        s.observe(&packet([0x72,0x8d],&[15,0,4]),1000);
+        assert_eq!(s.describe("In game",0,1001),"Crafting");
+        assert_eq!(s.describe("Fighting Boss",0,1001),"Fighting Boss");
+        s.observe(&packet([0x71,0x8d],&[0,5,0,0]),2000);
+        assert_eq!(s.describe("In game",0,4499),"Crafting");
+        assert_eq!(s.describe("In game",0,4500),"In game");
+        s.observe_with_local(&packet([0x72,0x8d],&[15,0,4]),5000,Some(15));
+        assert_eq!(s.describe("In game",0,5001),"Crafting");
+        map(&mut s,1010);
+        assert_eq!(s.describe("In game",0,5002),"In game");
+    }
+    #[test]
     fn morph_results_and_recipe_windows_never_activate_crafting() {
         let mut s = Activity::default();
         s.observe(&packet([0x8F,0x8D], &[0; 41]), 1_000);

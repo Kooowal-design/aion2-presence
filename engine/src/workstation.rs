@@ -1,5 +1,6 @@
 //! Workstation lifecycle inferred from a Global potion/cooking capture.
-//! No item-name list: recipes and actors are protocol varints.
+//! No item-name list: attempt tokens and actors are protocol varints.
+//! Premium-window production uses token 0 in the observed Global capture.
 //! 6F 8D: private per-attempt details (00 05 <recipe> <variable minigame data>)
 //! 72 8D: visible start (<actor> <recipe> <profession>)
 //! 71 8D: private result (<outcome> 05 <recipe> 00)
@@ -17,13 +18,13 @@ pub struct Workstation {
 }
 fn var(body: &[u8], at: &mut usize) -> Option<u32> {
     let v=read_varint(body,*at);
-    if v.length<=0 || v.value<=0 { return None; }
+    if v.length<=0 || v.value<0 { return None; }
     *at=at.checked_add(v.length as usize)?;
     Some(v.value as u32)
 }
 fn start(body: &[u8]) -> Option<(u32,u32,u8)> {
     let mut at=0;
-    let actor=var(body,&mut at)?; let recipe=var(body,&mut at)?;
+    let actor=var(body,&mut at).filter(|id|*id>0)?; let recipe=var(body,&mut at)?;
     let profession=*body.get(at)?;
     (at+1==body.len() && (1..=5).contains(&profession)).then_some((actor,recipe,profession))
 }
@@ -33,7 +34,7 @@ fn private_result(body: &[u8]) -> Option<u32> {
     (body.get(at)==Some(&0) && at+1==body.len()).then_some(recipe)
 }
 fn public_result(body: &[u8]) -> Option<(u32,u32,u8)> {
-    let mut at=0; let actor=var(body,&mut at)?;
+    let mut at=0; let actor=var(body,&mut at).filter(|id|*id>0)?;
     if *body.get(at)?>2 || body.get(at+1)!=Some(&5) { return None; }
     at+=2; let recipe=var(body,&mut at)?; let profession=*body.get(at)?;
     (at+1==body.len()).then_some((actor,recipe,profession))
@@ -180,11 +181,52 @@ mod tests {
                 assert!(s.is_active(1002),"short payload, profession {profession}, length {length}");
             }
         }
-        for body in [vec![0,5],vec![0,5,0x80],vec![0,5,0],vec![0,4,123]] {
+        for body in [vec![0,5],vec![0,5,0x80],vec![0,4,123]] {
             let mut s=Workstation::default();
             s.observe(&[0x6f,0x8d],&body,1000);
             s.observe(&[0x72,0x8d],&begins(15,123,4),1001);
             assert!(!s.is_active(1002));
+        }
+    }
+    #[test]
+    fn premium_zero_token_production_repeats_and_finishes_without_menu_events() {
+        let mut s=Workstation::default();
+        // Anonymized actor and observed relative timing/lengths. The complete
+        // private payload is not needed or retained in this regression fixture.
+        for (at,length,outcome,duration) in [(1000,118,1,15116),(17637,68,0,5637),(24683,58,0,3684)] {
+            let mut body=vec![0,5,0];body.resize(length,0);
+            s.observe(&[0x6f,0x8d],&body,at);
+            s.observe(&[0x72,0x8d],&begins(15,0,4),at);
+            assert!(s.is_active(at+duration-1));
+            s.observe(&[0x71,0x8d],&ends(0,outcome),at+duration);
+            let mut result=vi(15);result.extend([outcome,5,0,4]);
+            s.observe(&[0x74,0x8d],&result,at+duration);
+            assert!(s.is_active(at+duration+2499));
+        }
+        assert!(!s.is_active(30867));
+    }
+    #[test]
+    fn zero_token_keeps_actor_attribution_and_requires_a_start() {
+        for profession in 1..=5 {
+            let mut s=Workstation::default();
+            s.observe(&[0x72,0x8d],&begins(15,0,profession),1000);
+            s.observe(&[0x71,0x8d],&ends(0,0),1001);
+            assert!(!s.is_active(1002),"unknown public start/result must not activate");
+            s.observe_with_local(&[0x6f,0x8d],&details(0),2000,Some(15));
+            s.observe_with_local(&[0x72,0x8d],&begins(16,0,profession),2000,Some(15));
+            assert!(!s.is_active(2001),"private pair must not override known local actor");
+            s.observe_with_local(&[0x72,0x8d],&begins(15,0,profession),3000,Some(15));
+            assert!(s.is_active(3001));
+            let mut result=vi(16);result.extend([0,5,0,profession]);
+            s.observe_with_local(&[0x74,0x8d],&result,4000,Some(15));
+            assert!(s.is_active(7000),"another actor's result cannot end local production");
+            result=vi(15);result.extend([0,5,0,profession]);
+            s.observe_with_local(&[0x74,0x8d],&result,8000,Some(15));
+            assert!(s.is_active(10499));assert!(!s.is_active(10500));
+            s.clear();
+            s.observe(&[0x6f,0x8d],&details(0),11000);
+            s.observe(&[0x72,0x8d],&begins(0,0,profession),11000);
+            assert!(!s.is_active(11001),"actor 0 remains invalid");
         }
     }
     #[test]

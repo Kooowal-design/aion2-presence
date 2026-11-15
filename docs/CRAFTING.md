@@ -11,7 +11,10 @@ After installing beta.10, live use on 2026-11-15 confirmed Crafting while making
 
 ## Decoder
 
-- 6F 8D carries private attempt/minigame details and a recipe varint.
+- 6F 8D carries private attempt/minigame details and an attempt/recipe token
+  encoded as a varint. Station captures used positive tokens; the premium-window
+  capture uses token 0. Since beta.15 zero is accepted in starts and results,
+  while actor IDs must remain positive.
 - Since beta.14, a well-formed 72 8D start can activate Crafting on its own when
   its actor matches the local identity confirmed by the game's self record.
   Loot-derived or unknown identity is not sufficient for this path.
@@ -27,27 +30,35 @@ After installing beta.10, live use on 2026-11-15 confirmed Crafting while making
 - No result: a 60-second safety timeout clears stale state. Map changes, server
   handoff and a confirmed gathering start also clear it. Boss combat takes priority.
 
-Recipes are parsed as varints; no per-item list or recipe-specific timer is used.
+Attempt/recipe tokens are parsed as varints; no per-item list or recipe-specific timer is used.
 Profession values 1–5 are accepted without a recipe whitelist. The capture used to develop the decoder covered values 4/5; subsequent live bracelet crafting also worked. Remaining edge cases include unusually slow attempts exceeding 60 seconds and attribution among nearby crafters.
 
-## ALT+G path reported missing
+## Premium crafting window (default shortcut ALT+G)
 
 Initial live reports identified missing Crafting for Soulstone, Manastone,
 crafting scrolls, Magic Crystal in Handicrafting, and a bow. Follow-up testing
 clarified the distinction: those recipes were recognized at crafting stations,
-while crafting through ALT+G was not recognized, including potions. This points
-to the production path rather than a per-recipe coverage issue. The exact wire
-difference has not yet been established; a separate protocol is not assumed.
+while crafting through the premium window was not recognized, including potions.
+The follow-up private recording contains 1,696 decoded frames over 81 seconds,
+with a complete automatic batch of three attempts and three results, no recorder
+error and a normal user-finished stop. It uses the same 6F/72/71/74 8D lifecycle,
+but with token 0. The previous positive-only varint helper rejected that value
+in every start/result, reproducing the missing status offline.
 
-Beta.14 removes an unsupported minimum detail length and adds the
-confirmed-local-actor start path. It is not a confirmed fix for ALT+G.
+Beta.15 accepts zero attempt/recipe tokens, preserving positive actor checks,
+local-identity attribution or matching private/start pairs, result matching,
+batch gaps and timeout cleanup. The premium-window recording is replayed against
+the corrected decoder and the station recording is checked for regressions.
+This is recorded-data validation; live use of the installed beta.15 remains a
+separate check. It does not prove every profession/recipe has been recorded.
 Detection does not inspect windows, keyboard shortcuts or station interaction;
 it consumes incoming game frames indicating actual production.
 
-A short, opt-in [ALT+G diagnostic](diagnostics/Aion2Presence-AltG-Diagnostic.zip)
+A short, opt-in [premium-window diagnostic](diagnostics/Aion2Presence-AltG-Diagnostic.zip)
 guides one automatic batch of three items, with no station comparison required.
 Extract it on the game PC and run Start-AltG.cmd. It downloads the existing
 beta.14 diagnostic engine and verifies a pinned SHA-256 before starting it.
+ALT+G is only the default game shortcut; any binding or mouse entry works.
 Menu-opening markers only help analyze the recording; they are not a proposed
 detection mechanism. The resulting ZIP can contain private game data and must
 be shared privately, never in a public issue. Nothing uploads automatically.
