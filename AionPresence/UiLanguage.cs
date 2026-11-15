@@ -4,6 +4,22 @@ public static class UiLanguage
 {
     public static string Language { get; set; } = Preferences.Load().Language == "pl" ? "pl" : "en";
     private static readonly (string Pl, string En)[] Messages = [
+        ("Start", "Home"), ("Wyświetlanie", "Display"), ("Pomoc", "Help"),
+        ("PODGLĄD LOKALNY\nFikcyjne dane", "LOCAL PREVIEW\nDemo data"),
+        ("Stan aktualizacji", "Update state"), ("Podgląd lokalny", "Local preview"),
+        ("Gra wykryta", "Game detected"), ("Odczyt niedostępny", "Capture unavailable"),
+        ("Discord połączony", "Discord connected"),
+        ("AKTUALNA AKTYWNOŚĆ", "CURRENT ACTIVITY"), ("PODGLĄD DISCORDA", "DISCORD PREVIEW"),
+        ("WYŚWIETLANIE NA DISCORDZIE", "DISPLAY ON DISCORD"), ("PIERWSZE URUCHOMIENIE", "GETTING STARTED"),
+        ("Wybierz informacje widoczne pod Twoim nickiem.\n\nZmiany są stosowane automatycznie. Discord może skracać długi tekst i wybiera kolejność aktywności.", "Choose the information shown below your name.\n\nChanges are applied automatically. Discord may truncate long text and controls activity priority."),
+        ("Uruchom AION 2 i Discord desktop na tym samym komputerze.\nDo odczytu wymagany jest Npcap. ExitLag może pozostać włączony.\n\nJeśli gra zgłasza błąd przy starcie, włącz najpierw grę, potem Presence.\nBrak danych postaci? Poczekaj na wejście do świata lub teleport.\nNazwy dungeonów wymagają odebrania komunikatu mapy.", "Run AION 2 and Discord desktop on the same computer.\nNpcap is required. You can keep ExitLag enabled.\n\nIf the game reports a launch error, start the game first, then Presence.\nNo character data? Wait for entering the world or a teleport.\nDungeon names require a captured map-load message."),
+        ("Podgląd lokalny — fikcyjne dane, bez odczytu gry.", "Local preview — demo data, no game capture."),
+        ("Status nie jest wysyłany na Discorda.", "No activity is sent to Discord."),
+        ("Dostępna aktualizacja", "Update available"), ("Aktualna wersja", "Up to date"),
+        ("Nie można sprawdzić wersji", "Could not check for updates"), ("Aktualizacje aplikacji", "App updates"),
+        ("Sprawdzę plik przed uruchomieniem instalatora.", "The installer will be verified before it opens."),
+        ("Zainstalowana: ", "Installed: "), ("Bieżąca wersja: ", "Current version: "),
+        ("Korzystasz z najnowszej wersji.", "You are using the latest version."), ("Sprawdź ponownie", "Check again"),
         ("Instalacja AION2 Presence", "AION2 Presence Setup"),
         ("Twoja postać i aktywność w AION 2 na Discordzie.\n\nInstalacja dla bieżącego użytkownika Windows\noraz skróty na pulpicie i w menu Start.\n\nWymagane są AION 2, Discord desktop i Npcap.", "Your AION 2 character and activity on Discord.\n\nInstalls for the current Windows user, with\nshortcuts on the desktop and in the Start menu.\n\nRequires AION 2, Discord desktop and Npcap."),
         ("Zainstalowano.\n\nSkróty AION2 Presence są na pulpicie i w menu Start.\nMożesz usunąć pobrany instalator.\n\nKliknij Uruchom, aby rozpocząć.", "Installed.\n\nAION2 Presence shortcuts are on your desktop and Start menu.\nYou can delete the downloaded installer.\n\nClick Launch to get started."),

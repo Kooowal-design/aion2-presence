@@ -3,10 +3,12 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net10.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
+    <UseWPF>true</UseWPF>
+    <StartupObject>AionPresence.Program</StartupObject>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AssemblyName>Aion2Presence</AssemblyName>
-    <Version>0.2.0-beta.5</Version>
+    <Version>0.2.0-beta.6</Version>
     <ApplicationIcon>Assets/app.ico</ApplicationIcon>
     <PublishSingleFile>true</PublishSingleFile>
     <SelfContained>true</SelfContained>
@@ -15,7 +17,10 @@
     <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="MainForm.cs;AuroraTheme.cs" />
+    <Resource Include="Assets/UI/*.png" />
     <EmbeddedResource Include="Assets/app.ico" LogicalName="AionPresence.Icon" />
+    <EmbeddedResource Include="Assets/logo.png" LogicalName="AionPresence.Logo" />
     <EmbeddedResource Include="../LICENSE" LogicalName="AionPresence.License" />
     <EmbeddedResource Include="../NOTICE.md" LogicalName="AionPresence.Notice" />
     <EmbeddedResource Include="../discord-app.json" LogicalName="AionPresence.DiscordIdentity" />

@@ -19,16 +19,28 @@ public static class SelfTests
             UiLanguage.Language = "en";
             Check(UiLanguage.Text("Zainstaluj") == "Install", "English installer text");
             Check(UiLanguage.Text("Aktywność: Gathering") == "Activity: Gathering", "Dynamic activity localization");
-            using (var preview = new MainForm(true)) {
-                Check(preview.Controls.Cast<Control>().SelectMany(Flatten).Any(c => c.Text == "CONNECTIONS"), "English application controls");
-                UiLanguage.Language = "pl"; UiLanguage.Apply(preview);
-                Check(preview.Controls.Cast<Control>().SelectMany(Flatten).Any(c => c.Text == "POŁĄCZENIA"), "Live language switch restores Polish");
-            }
+            var preferencesBefore = File.Exists(Preferences.FileName) ? File.ReadAllText(Preferences.FileName) : null;
+            var preview = new MainWindow(preview: true, renderOnly: true) { WindowStartupLocation = System.Windows.WindowStartupLocation.Manual, Left = -20000, Top = -20000, ShowInTaskbar = false, ShowActivated = false };
+            try {
+                preview.Show(); preview.UpdateLayout();
+                Check(preview.HomeText == "Home", "English application navigation");
+                Check(preview.UpdateTitle == "Up to date", "Current-version panel in preview");
+                preview.SetPreviewUpdate(true);
+                Check(preview.UpdateTitle == "Update available", "Available-update panel in preview");
+                preview.ShowName = !preview.ShowName;
+                Check(preview.ShowName == preview.DiscordSummary.StartsWith("Lyra"), "Display choice changes the actual Discord summary");
+                preview.ShowPage("home"); preview.Width=960; preview.Height=720; preview.UpdateLayout();
+                Check(preview.CpValue.Text == "86.32k" && preview.CpValue.ActualHeight > 20, "CP has complete text and a full-height WPF value element");
+                preview.SetLanguage("pl");
+                Check(preview.HomeText == "Start", "Live language switch restores Polish navigation");
+            } finally { preview.Close(); }
+            Check((File.Exists(Preferences.FileName) ? File.ReadAllText(Preferences.FileName) : null) == preferencesBefore, "Design preview never changes saved preferences");
             UiLanguage.Language = language;
             SynchronizationContext.SetSynchronizationContext(null); // No UI message loop in command-line tests.
             Check(Program.IsInstaller("Aion2Presence-Setup.exe"), "Installer filename");
             Check(Program.IsInstaller("Aion2Presence-Setup (1).exe"), "Downloaded installer with duplicate suffix");
             Check(!Program.IsInstaller("Aion2Presence.exe"), "Installed app is not an installer");
+            Check(Program.IsDesignPreview("Aion2Presence-Preview.exe") && !Program.IsDesignPreview("Aion2Presence.exe"), "Local preview executable defaults to isolated demo mode");
             var now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             Check(Updates.Compare("0.2.0-beta.10", "0.2.0-beta.9") > 0, "Numeric beta versions sort correctly");
             Check(Updates.Compare("0.2.0", "0.2.0-beta.99") > 0, "Stable release sorts after its betas");

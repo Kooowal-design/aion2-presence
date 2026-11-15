@@ -27,6 +27,8 @@ public sealed class PresenceApp : IAsyncDisposable
     public string ProfilePreview { get; private set; } = "";
     public string LastError => lastError.Length > 0 ? lastError : diagnostics.Message(Environment.TickCount64);
     public bool Accepted { get; private set; }
+    public bool DiscordConnected { get; private set; }
+    public bool SourceFresh { get; private set; }
     public LiveData? Data => Volatile.Read(ref data);
     public PresenceApp(Func<Preferences> preferences) { this.preferences = preferences; }
     public void Start() { runner ??= Run(stop.Token); }
@@ -109,6 +111,7 @@ public sealed class PresenceApp : IAsyncDisposable
                 }
                 var d = Data;
                 var fresh = d?.Fresh(now.ToUnixTimeMilliseconds()) == true && now.ToUnixTimeMilliseconds() - Interlocked.Read(ref lastDataAt) < 8000;
+                SourceFresh = fresh;
                 CaptureStatus = !fresh ? "Silnik nie odpowiada" : !d!.CaptureOk ? "Brak odczytu Npcap — sprawdź komunikat poniżej" :
                     !d.Running ? "Czekam na AION 2" : d.Character is null ? "Odczyt działa. Czekam na dane postaci z gry…" :
                     $"Postać rozpoznana · {(d.Device?.Contains("loopback", StringComparison.OrdinalIgnoreCase) == true ? "Loopback / tunel" : "Połączenie gry")}{(d.Port is not null ? " · port " + d.Port : "")}";
@@ -122,7 +125,7 @@ public sealed class PresenceApp : IAsyncDisposable
                     ProfilePreview = payload["state"]?.GetValue<string>() ?? "";
                 } else { identity = null; Preview = ""; ProfilePreview = ""; }
                 if (discord is null && now >= retryDiscord) {
-                    try { discord = await DiscordPipe.Connect("", ct); sent = null; }
+                    try { discord = await DiscordPipe.Connect("", ct); DiscordConnected = true; sent = null; }
                     catch (IOException e) { Status = e.Message; retryDiscord = now.AddSeconds(10); }
                 }
                 var json = payload?.ToJsonString() ?? "null";
@@ -138,7 +141,7 @@ public sealed class PresenceApp : IAsyncDisposable
                     catch (Exception e) when (e is IOException or OperationCanceledException or InvalidOperationException) {
                         if (ct.IsCancellationRequested) break;
                         Status = e is OperationCanceledException ? "Discord nie odpowiedział — ponawiam" : e.Message;
-                        await discord.DisposeAsync(); discord = null; Accepted = false; retryDiscord = now.AddSeconds(5);
+                        await discord.DisposeAsync(); discord = null; Accepted = false; DiscordConnected = false; retryDiscord = now.AddSeconds(5);
                     }
                 }
                 await Task.Delay(1000, ct);
@@ -148,6 +151,8 @@ public sealed class PresenceApp : IAsyncDisposable
         catch (Exception e) { lastError = e.Message; Status = "Zatrzymano z błędem"; }
         finally {
             Accepted = false;
+            DiscordConnected = false;
+            SourceFresh = false;
             if (discord is not null) {
                 try { using var timeout = new CancellationTokenSource(1500); await discord.Set(Command(null), timeout.Token); } catch { }
                 await discord.DisposeAsync();

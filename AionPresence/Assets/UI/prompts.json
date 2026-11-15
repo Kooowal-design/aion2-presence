@@ -1,0 +1,10 @@
+[
+  {
+    "asset": "background.png",
+    "prompt": "Create a production UI BACKGROUND TEXTURE matching the dark navy atmosphere of the attached Aurora x Aether desktop design. The image is ONLY the background art to be placed UNDER real interactive controls, not an app mockup. Wide landscape 1600x1000 composition. Deep midnight blue #091525, polished soft sapphire/teal light, extremely subtle violet haze at the left edge. Original flowing cyan aether light filaments hugging the bottom-left edge and top-right edge, translucent feathery wisps with refined luminous detail. Keep the entire central 80% very dark, calm and low contrast so app text and panels laid on top stay readable. Premium fantasy atmosphere, modern, restrained, rich finely shaded material. Absolutely NO text, letters, numbers, logos, borders, panels, buttons, UI, icons, character art, grids, stars, lens flare or watermark. Reference is only for palette and mood; DO NOT reproduce its interface or text."
+  },
+  {
+    "asset": "wing.png",
+    "prompt": "Create a production decorative UI asset: a SINGLE elegant right wing formed from translucent cyan-blue glass/ethereal feathers, matching the subtle right wing watermark inside the character card in reference image 1 and the cyan wing shapes of the existing app logo in reference image 2. The wing sweeps from lower-left to upper-right. Elegant layered long feathers, detailed soft glass edges, luminous teal tips, dark sapphire internal shading, soft directional light, refined premium AION fantasy mood. One isolated wing, no extra objects. No letter A, no other letters or symbols, no logo badge, no square background, no text, no UI, no border. Composition wide 3:2 with feather tips safely inside frame and useful transparent margins. GENUINELY TRANSPARENT background. This will be used faintly behind a native character card, so preserve recognizable feather detail without a large opaque glow halo."
+  }
+]
