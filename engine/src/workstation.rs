@@ -4,8 +4,8 @@
 //! 72 8D: visible start (<actor> <recipe> <profession>)
 //! 71 8D: private result (<outcome> 05 <recipe> 00)
 //! 74 8D: visible result (<actor> <outcome> 05 <recipe> <profession>)
-//! The private details must be immediately followed by a matching public start:
-//! public events alone must never advertise another player's crafting.
+//! A public start is accepted only for a game-confirmed local actor, or as an
+//! immediate matching pair with private details when identity is unavailable.
 use a2tools_dps_meter_lib::capture::stream_processor::read_varint;
 const ATTEMPT_LEASE: i64 = 60_000;
 const BETWEEN_ATTEMPTS: i64 = 2_500;
@@ -42,16 +42,29 @@ impl Workstation {
     pub fn clear(&mut self) { self.pending=None; self.active=None; }
     pub fn is_active(&self, now:i64) -> bool { self.active.is_some_and(|(_,_,_,until)|now<until) }
     pub fn observe(&mut self, op:&[u8], body:&[u8], now:i64) {
+        self.observe_with_local(op,body,now,None);
+    }
+    pub fn observe_with_local(&mut self, op:&[u8], body:&[u8], now:i64, local_actor:Option<i64>) {
+        let local_actor=local_actor.and_then(|id|u32::try_from(id).ok()).filter(|id|*id>0);
+        if let Some(local)=local_actor {
+            if self.active.is_some_and(|(actor,_,_,_)|actor!=local) { self.active=None; }
+        }
         // Details and start are adjacent in all 19 observed attempts.
         let pending=self.pending.take();
         match op {
-            [0x6f,0x8d] if body.len()>=24 && body.starts_with(&[0,5]) => {
+            // Recipe/minigame payload length is variable. The old 24-byte floor
+            // was not a protocol requirement; a complete recipe is sufficient
+            // here because a separate matching start must still follow it.
+            [0x6f,0x8d] if body.starts_with(&[0,5]) => {
                 let mut at=2;
                 if let Some(recipe)=var(body,&mut at) { self.pending=Some((recipe,now)); }
             }
             [0x72,0x8d] => {
-                if let (Some((private_recipe,at)),Some((actor,recipe,profession)))=(pending,start(body)) {
-                    if private_recipe==recipe && (0..=2_000).contains(&(now-at)) {
+                if let Some((actor,recipe,profession))=start(body) {
+                    let own_start=local_actor==Some(actor);
+                    let private_pair=local_actor.is_none() && pending.is_some_and(|(private_recipe,at)|
+                        private_recipe==recipe && (0..=2_000).contains(&(now-at)));
+                    if own_start || private_pair {
                         self.active=Some((actor,recipe,profession,now.saturating_add(ATTEMPT_LEASE)));
                     }
                 }
@@ -153,6 +166,62 @@ mod tests {
             s.observe(&[0x6f,0x8d],&[0;9][..n.min(9)],5000);
             s.observe(&[0x72,0x8d],&[0xff;9][..n.min(9)],5000);
             assert!(!s.is_active(5001));
+        }
+    }
+    #[test]
+    fn short_private_details_need_a_complete_recipe_and_matching_start() {
+        for profession in 1..=5 {
+            for length in 3..24 {
+                let mut body=vec![0,5,123]; body.resize(length,0);
+                let mut s=Workstation::default();
+                s.observe(&[0x6f,0x8d],&body,1000);
+                assert!(!s.is_active(1001),"details alone must not activate");
+                s.observe(&[0x72,0x8d],&begins(15,123,profession),1001);
+                assert!(s.is_active(1002),"short payload, profession {profession}, length {length}");
+            }
+        }
+        for body in [vec![0,5],vec![0,5,0x80],vec![0,5,0],vec![0,4,123]] {
+            let mut s=Workstation::default();
+            s.observe(&[0x6f,0x8d],&body,1000);
+            s.observe(&[0x72,0x8d],&begins(15,123,4),1001);
+            assert!(!s.is_active(1002));
+        }
+    }
+    #[test]
+    fn game_confirmed_local_start_does_not_require_private_minigame_details() {
+        for profession in 1..=5 {
+            let mut s=Workstation::default();
+            s.observe_with_local(&[0x72,0x8d],&begins(16,98765,profession),1000,Some(15));
+            assert!(!s.is_active(1001),"bystander must not activate");
+            s.observe_with_local(&[0x72,0x8d],&begins(15,98765,profession),1001,Some(15));
+            assert!(s.is_active(1002));
+            s.observe_with_local(&[0x71,0x8d],&ends(98765,0),2000,Some(15));
+            assert!(s.is_active(4499));assert!(!s.is_active(4500));
+        }
+    }
+    #[test]
+    fn known_local_identity_overrides_a_coincidental_private_pair() {
+        let mut s=Workstation::default();
+        s.observe_with_local(&[0x6f,0x8d],&details(123),1000,Some(15));
+        s.observe_with_local(&[0x72,0x8d],&begins(16,123,4),1001,Some(15));
+        assert!(!s.is_active(1002));
+        s.observe_with_local(&[0x72,0x8d],&begins(15,456,4),1003,Some(15));
+        assert!(s.is_active(1004));
+    }
+    #[test]
+    fn identity_changes_and_malformed_local_starts_cannot_keep_old_crafting() {
+        let mut s=Workstation::default();
+        s.observe_with_local(&[0x72,0x8d],&begins(15,123,4),1000,Some(15));
+        assert!(s.is_active(1001));
+        s.observe_with_local(&[0,0x36],&[],1002,Some(16));
+        assert!(!s.is_active(1003));
+        for body in [vec![15],vec![15,0x80],vec![15,123,0],vec![15,123,6],vec![15,123,4,0]] {
+            s.observe_with_local(&[0x72,0x8d],&body,2000,Some(15));
+            assert!(!s.is_active(2001));
+        }
+        for op in [[0x8f,0x8d],[0x8b,0x8d]] {
+            s.observe_with_local(&op,&begins(15,123,4),3000,Some(15));
+            assert!(!s.is_active(3001),"window and morph must remain excluded");
         }
     }
 }

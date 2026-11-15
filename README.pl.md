@@ -8,7 +8,7 @@
 
 Bezpłatna aplikacja Windows z otwartym kodem, pokazująca statystyki postaci i to, co robisz w grze. Działa samodzielnie w tle. Nie wymaga uruchomionego DPS metera, tokena Discord ani konfiguracji w Developer Portal.
 
-**[Pobierz na Windows](https://github.com/Kooowal-design/aion2-presence/releases/tag/v0.2.0-beta.13)** · **[Wszystkie wersje](https://github.com/Kooowal-design/aion2-presence/tags)** · **[Zgłoś błąd](https://github.com/Kooowal-design/aion2-presence/issues/new/choose)**
+**[Pobierz na Windows](https://github.com/Kooowal-design/aion2-presence/releases/tag/v0.2.0-beta.14)** · **[Wszystkie wersje](https://github.com/Kooowal-design/aion2-presence/tags)** · **[Zgłoś błąd](https://github.com/Kooowal-design/aion2-presence/issues/new/choose)**
 
 ## Jak wygląda na Discordzie
 
@@ -56,7 +56,7 @@ Mały znaczek w rogu **grafiki klasy wewnątrz karty gry** oznacza walkę z boss
 | Walka z rozpoznanym bossem w dungeonie | `Dungeon name (difficulty) · Fighting Boss name` |
 | Walka z rozpoznanym bossem otwartego świata | `Fighting Boss name` |
 | Zbieranie surowców | `Gathering` |
-| Crafting, w tym automatyczne serie | `Crafting` |
+| Rozpoznany crafting, w tym automatyczne serie | `Crafting` |
 | Konkurencja Shugo — eksperymentalnie, obie frakcje | `Shugo Festival · Defend Shugo Merchants` |
 | Brak rozpoznanej aktywności | `AION 2 - In game` albo wybrane statystyki na liście w trybie automatycznym |
 
@@ -64,7 +64,7 @@ Nazwy dungeonów i bossów pochodzą z rozpoznanych danych gry. **Wykrywanie bos
 
 Nazwa dungeona wymaga odebrania komunikatu wczytania mapy. Sama informacja o grupie nie potwierdza lokalizacji. Po uruchomieniu aplikacji w trakcie sesji może być potrzebne kolejne wczytanie mapy. Wyjście lub przejście czyści poprzednią lokalizację.
 
-Crafting włącza się po rozpoczęciu wytwarzania, także przy automatycznych seriach. Samo otwarcie okna przepisów nie uruchamia statusu. Nie ma konfiguracji dla każdego przepisu; Substance Morph jest pomijany. Zobacz [zakres sprawdzenia i ograniczenia](docs/CRAFTING.md).
+Wykryty crafting włącza się po rozpoczęciu wytwarzania, także przy automatycznych seriach. Wykrywanie jest nadal eksperymentalne; obsługa może różnić się między recepturami. Samo otwarcie okna przepisów nie uruchamia statusu. Nie ma konfiguracji dla każdego przepisu; Substance Morph jest pomijany. Zobacz [zakres sprawdzenia i ograniczenia](docs/CRAFTING.md).
 
 Eksperymentalna obsługa Shugo obejmuje dziewięć nazwanych konkurencji na mapach Elyosów i Asmodian. Udział jest rozpoznawany z mapy konkurencji lub aktywnego runu; sam harmonogram nie wystarcza. Szczegóły: [wykrywanie Shugo](docs/SHUGO.md).
 
@@ -72,7 +72,7 @@ Walka z bossem ma pierwszeństwo przed zbieraniem i craftingiem. **Nie wykrywamy
 
 ## Instalacja
 
-1. Otwórz **[bieżące wydanie](https://github.com/Kooowal-design/aion2-presence/releases/tag/v0.2.0-beta.13)** i pobierz **Aion2Presence-Setup.exe**. **[Wszystkie wersje](https://github.com/Kooowal-design/aion2-presence/tags)** znajdziesz w Tags; opcja **Downloads** przy danej wersji prowadzi do plików wydania.
+1. Otwórz **[bieżące wydanie](https://github.com/Kooowal-design/aion2-presence/releases/tag/v0.2.0-beta.14)** i pobierz **Aion2Presence-Setup.exe**. **[Wszystkie wersje](https://github.com/Kooowal-design/aion2-presence/tags)** znajdziesz w Tags; opcja **Downloads** przy danej wersji prowadzi do plików wydania.
 2. Przy ręcznej aktualizacji zakończ działającą kopię z menu ikony przy zegarku. Uruchom instalator, wybierz folder i kliknij **Zainstaluj**.
 3. Włącz **AION2 Presence** ze skrótu na pulpicie lub z menu Start.
 4. Uruchom AION 2 i Discord desktop na tym samym komputerze. Wymagany jest [Npcap](https://npcap.com/#download); istniejącą instalację można wykorzystać ponownie.

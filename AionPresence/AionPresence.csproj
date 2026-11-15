@@ -8,7 +8,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AssemblyName>Aion2Presence</AssemblyName>
-    <Version>0.2.0-beta.13</Version>
+    <Version>0.2.0-beta.14</Version>
     <ApplicationIcon>Assets/app.ico</ApplicationIcon>
     <PublishSingleFile>true</PublishSingleFile>
     <SelfContained>true</SelfContained>

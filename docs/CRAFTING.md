@@ -12,19 +12,32 @@ After installing beta.10, live use on 2026-11-15 confirmed Crafting while making
 ## Decoder
 
 - 6F 8D carries private attempt/minigame details and a recipe varint.
-- The immediately following 72 8D must contain the same recipe and a well-formed
-  actor/recipe/profession tuple. Only this pair activates Crafting.
+- Since beta.14, a well-formed 72 8D start can activate Crafting on its own when
+  its actor matches the local identity confirmed by the game's self record.
+  Loot-derived or unknown identity is not sufficient for this path.
+- If confirmed identity is unavailable, the immediately following 72 8D must
+  match the recipe from private 6F 8D details. The unnecessary 24-byte minimum
+  for those variable-length details was removed; the recipe must still be complete.
 - A matching private 71 8D or actor/recipe/profession-specific 74 8D result shortens
   the activity lease to 2.5 seconds. This bridges the observed ~1.5-second repeat
   delay and clears after cancellation or the last attempt without guessing
   whether result codes mean success, failure or manual cancellation.
-- Public starts/results by themselves, recipe windows and 8B 8D Substance Morph
-  do not activate the status.
+- Public starts for another/unknown actor, results without a confirmed start,
+  recipe windows and 8B 8D Substance Morph do not activate the status.
 - No result: a 60-second safety timeout clears stale state. Map changes, server
   handoff and a confirmed gathering start also clear it. Boss combat takes priority.
 
 Recipes are parsed as varints; no per-item list or recipe-specific timer is used.
 Profession values 1–5 are accepted without a recipe whitelist. The capture used to develop the decoder covered values 4/5; subsequent live bracelet crafting also worked. Remaining edge cases include unusually slow attempts exceeding 60 seconds and attribution among nearby crafters.
+
+## Additional recipes reported missing
+
+Live reports on beta.13 identified missing Crafting for Soulstone, Manastone,
+crafting scrolls, Magic Crystal in Handicrafting, and a bow, while potion crafting
+still worked. No recording of those particular attempts is available. Beta.14
+removes the unsupported minimum detail length and adds the confirmed-local-actor
+start path; these are parser corrections, not proof of live coverage for every
+reported recipe. Verification after installation remains necessary.
 
 ## Replay without live collection
 
@@ -36,6 +49,11 @@ It emits frame counts and Crafting transitions only, without echoing payloads,
 character names or chat. The raw private capture is not committed or published.
 Synthetic regression fixtures cover variable recipe/actor IDs, result gaps,
 malformed packets, public-only events, timeout, combat and map changes.
+Beta.14 also covers short detail payloads, confirmed-local starts without private
+details, rejection of bystander starts, identity changes and all five profession
+values. Replaying all 6,545 frames of the existing private capture produces the
+same activity transitions as before the change. No new raw capture was collected
+or published for these checks.
 
 ## Diagnostic interruption fixed
 

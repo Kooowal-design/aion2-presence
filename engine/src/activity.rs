@@ -25,12 +25,15 @@ impl Activity {
     }
 
     pub fn observe(&mut self, packet: &[u8], now: i64) {
+        self.observe_with_local(packet,now,None);
+    }
+    pub fn observe_with_local(&mut self, packet: &[u8], now: i64, local_actor:Option<i64>) {
         let prefix = read_varint(packet, 0);
         if prefix.length <= 0 { return; }
         let o = prefix.length as usize;
         let Some(op) = packet.get(o..o + 2) else { return; };
         let body = &packet[o + 2..];
-        self.workstation.observe(op,body,now);
+        self.workstation.observe_with_local(op,body,now,local_actor);
         if self.workstation.is_active(now) { self.action=None; }
         if server_move_port(packet).is_some()
             || (op == [0x23, 0x36] && body.first() == Some(&0)) {
@@ -154,6 +157,22 @@ mod tests {
         s.observe(&packet([0x72,0x8d],&[15,123,4]),5000);
         map(&mut s,1010);
         assert_eq!(s.describe("In game",0,5001),"In game");
+    }
+    #[test]
+    fn confirmed_local_crafting_without_private_details_still_respects_location_and_gathering() {
+        let mut s=Activity::default();
+        let start=packet([0x72,0x8d],&[15,123,3]);
+        s.observe_with_local(&start,1000,Some(15));
+        assert_eq!(s.describe("In game",0,1001),"Crafting");
+        assert_eq!(s.describe("Fighting Boss",0,1001),"Fighting Boss");
+        s.observe_with_local(&packet([0x31,0x8d],&[0,0,16,1,0,0,0]),2000,Some(15));
+        assert_eq!(s.describe("In game",0,2001),"Gathering");
+        s.observe_with_local(&start,3000,Some(15));
+        assert_eq!(s.describe("In game",0,3001),"Crafting");
+        map(&mut s,1010);
+        assert_eq!(s.describe("In game",0,3002),"In game");
+        s.observe_with_local(&start,4000,Some(16));
+        assert_eq!(s.describe("In game",0,4001),"In game");
     }
     #[test]
     fn morph_results_and_recipe_windows_never_activate_crafting() {

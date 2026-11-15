@@ -31,6 +31,11 @@ mod logging { pub mod logger { pub fn log_packet(cap: &crate::capture::captured_
 mod share { pub mod ring { pub fn record(_: &crate::capture::captured_payload::CapturedPayload) {} } }
 
 fn now_ms() -> i64 { SystemTime::now().duration_since(UNIX_EPOCH).unwrap_or_default().as_millis() as i64 }
+fn trusted_crafting_actor(storage:&DataStorage)->Option<i64> {
+    // Loot-derived guesses can belong to a bystander; only game/self identity
+    // can attribute a public crafting start to the local character.
+    if storage.local_identity_from_self_record() { storage.local_player_id() } else { None }
+}
 fn english_class(class: a2tools_dps_meter_lib::entity::job_class::JobClass) -> &'static str {
     use a2tools_dps_meter_lib::entity::job_class::JobClass::*;
     match class { Gladiator=>"Gladiator", Templar=>"Templar", Ranger=>"Ranger", Assassin=>"Assassin", Sorcerer=>"Sorcerer", Cleric=>"Cleric", Elementalist=>"Spiritmaster", Chanter=>"Chanter", Fighter=>"Brawler" }
@@ -98,11 +103,12 @@ async fn main() {
     let storage = Arc::new(DataStorage::new());
     let activities = Arc::new(parking_lot::Mutex::new(activity::Activity::default()));
     let activity_tap = activities.clone();
+    let activity_storage = storage.clone();
     a2tools_dps_meter_lib::capture::frame_tap::set(Some(Arc::new(move |packet| {
         if let Some(port) = activity::server_move_port(packet) {
             capture::combat_port_detector::announce_port(port);
         }
-        activity_tap.lock().observe(packet, now_ms());
+        activity_tap.lock().observe_with_local(packet, now_ms(), trusted_crafting_actor(&activity_storage));
     })));
     let skills = Arc::new(SkillLookup::new());
     let npcs = Arc::new(NpcLookup::new());
@@ -172,6 +178,16 @@ mod tests {
     fn unknown_identity_never_fabricates_a_character() {
         let data = snapshot(&DataStorage::new(), &NpcLookup::new(), &json!({}), &json!({}), true, None, None, true, 0);
         assert!(data["character"].is_null());
+    }
+    #[test]
+    fn public_crafting_attribution_requires_game_confirmed_identity() {
+        let storage=DataStorage::new();
+        storage.set_local_player_id(Some(15));
+        assert_eq!(trusted_crafting_actor(&storage),None,"an unconfirmed actor id is insufficient");
+        storage.set_local_identity_from_game(15,Some("TestCharacter".into()));
+        assert_eq!(trusted_crafting_actor(&storage),Some(15));
+        storage.set_local_player_id(None);
+        assert_eq!(trusted_crafting_actor(&storage),None);
     }
     #[test]
     fn stale_party_dungeon_is_never_published_as_current_location() {
