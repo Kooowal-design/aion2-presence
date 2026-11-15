@@ -8,7 +8,7 @@
 
 A free, open-source Windows app that shows your character stats and what you are doing in game. Runs independently in the background — no running DPS meter, Discord token or developer setup required.
 
-**[Download for Windows](https://github.com/Kooowal-design/aion2-presence/releases/tag/v0.2.0-beta.12)** · **[All versions](https://github.com/Kooowal-design/aion2-presence/tags)** · **[Report a bug](https://github.com/Kooowal-design/aion2-presence/issues/new/choose)**
+**[Download for Windows](https://github.com/Kooowal-design/aion2-presence/releases/tag/v0.2.0-beta.13)** · **[All versions](https://github.com/Kooowal-design/aion2-presence/tags)** · **[Report a bug](https://github.com/Kooowal-design/aion2-presence/issues/new/choose)**
 
 ## How it looks on Discord
 
@@ -40,7 +40,7 @@ Turning **Activity** off hides its profile text and small badge, and prevents Au
 
 ## Original class and activity icons
 
-![Nine original class icons for AION2 Presence](docs/presence-classes-v11.png)
+![Nine original class icons for AION2 Presence](docs/presence-classes-v13.png)
 
 The large image identifies your class. Nine designs are included: Gladiator, Templar, Ranger, Assassin, Sorcerer, Spiritmaster, Cleric, Chanter and Brawler. The Brawler design is prepared for supported game versions; it does not imply availability in every region.
 
@@ -72,7 +72,7 @@ Boss combat takes priority over gathering and crafting. **AFK and open-world loc
 
 ## Install
 
-1. Open the **[current release](https://github.com/Kooowal-design/aion2-presence/releases/tag/v0.2.0-beta.12)** and download **Aion2Presence-Setup.exe**. Browse **[all versions](https://github.com/Kooowal-design/aion2-presence/tags)** through Tags; use **Downloads** beside a version to open its release assets.
+1. Open the **[current release](https://github.com/Kooowal-design/aion2-presence/releases/tag/v0.2.0-beta.13)** and download **Aion2Presence-Setup.exe**. Browse **[all versions](https://github.com/Kooowal-design/aion2-presence/tags)** through Tags; use **Downloads** beside a version to open its release assets.
 2. If updating manually, exit the running copy from its system tray menu. Run the installer, choose a folder and select **Install**.
 3. Launch **AION2 Presence** from its desktop shortcut or the Windows Start menu.
 4. Run AION 2 and Discord desktop on the same computer. [Npcap](https://npcap.com/#download) is required; an existing installation can be reused.
