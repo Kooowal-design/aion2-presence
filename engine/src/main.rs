@@ -7,6 +7,7 @@ use serde_json::{Value, json};
 use a2tools_dps_meter_lib::{combat::data_storage::DataStorage, i18n::lookup::{NpcLookup, SkillLookup}};
 mod activity;
 mod shugo;
+mod craft_probe;
 
 pub use a2tools_dps_meter_lib::{clock, i18n};
 mod capture {
@@ -56,7 +57,7 @@ fn snapshot(storage: &DataStorage, npcs: &NpcLookup, dungeons: &Value, servers: 
             activity = if activity.is_empty() { place } else { format!("{place} · {activity}") };
         }
     }
-    // Crafting, gathering and event composition are added by Activity below.
+    // Gathering and event composition are added by Activity below.
     if activity.is_empty() { activity = "In game".into(); }
     let server = servers.get("servers").and_then(|s| s.get(p.server_id.to_string())).and_then(|s| s.get("en")).and_then(Value::as_str).unwrap_or("");
     json!({ "schema":1, "updatedAt":now_ms(), "running":running, "captureOk":capture_ok, "port":port, "device":device,
@@ -67,6 +68,17 @@ fn snapshot(storage: &DataStorage, npcs: &NpcLookup, dungeons: &Value, servers: 
 #[tokio::main]
 async fn main() {
     tracing_subscriber::fmt().with_writer(std::io::stderr).with_env_filter("warn").without_time().with_ansi(false).init();
+    let args: Vec<String> = std::env::args().collect();
+    if args.get(1).is_some_and(|a| a == "--craft-probe") {
+        if args.len() != 4 {
+            eprintln!("Usage: aion-presence-engine --craft-probe OUTPUT.json PHASE.txt");
+            std::process::exit(2);
+        }
+        if let Err(error) = craft_probe::run(args[2].clone().into(),args[3].clone().into()).await {
+            eprintln!("Craft diagnostic failed: {error}"); std::process::exit(1);
+        }
+        return;
+    }
     if std::env::args().any(|a|a=="--probe") {
         match capture::pcap_capturer::list_device_labels() {
             Ok(devices)=>println!("{}",json!({"npcap":true,"devices":devices})),

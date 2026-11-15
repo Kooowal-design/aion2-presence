@@ -55,7 +55,7 @@ public static class UiLanguage
         ("PODGLĄD TEKSTU POD NICKIEM", "MEMBER LIST STATUS PREVIEW"),
         ("CO POKAZAĆ NA LIŚCIE", "SHOW IN MEMBER LIST"),
         ("Postać", "Character"), ("Klasa", "Class"), ("Aktywność", "Activity"),
-        ("PIERWSZE URUCHOMIENIE\n1. Uruchom Discord desktop i AION 2 na tym samym komputerze.\n2. Pozostaw ExitLag włączony. Odczyt obejmuje też adapter loopback.\n3. Jeśli brak postaci: uruchom aplikację przed wejściem postaci do świata.\n\nWymagany Npcap. Aktywność: boss, dungeon, zbieranie lub crafting.", "GETTING STARTED\n1. Run Discord desktop and AION 2 on the same computer.\n2. You can keep ExitLag enabled. Capture includes loopback traffic.\n3. No character data? Start the app before entering the game world.\n\nNpcap required. Activity: boss, dungeon, gathering or crafting."),
+        ("PIERWSZE URUCHOMIENIE\n1. Uruchom Discord desktop i AION 2 na tym samym komputerze.\n2. Pozostaw ExitLag włączony. Odczyt obejmuje też adapter loopback.\n3. Jeśli brak postaci: uruchom aplikację przed wejściem postaci do świata.\n\nWymagany Npcap. Aktywność: boss, dungeon, zbieranie.", "GETTING STARTED\n1. Run Discord desktop and AION 2 on the same computer.\n2. You can keep ExitLag enabled. Capture includes loopback traffic.\n3. No character data? Start the app before entering the game world.\n\nNpcap required. Activity: boss, dungeon, gathering."),
         ("Wstrzymaj", "Pause"), ("Ukryj do zasobnika", "Hide to tray"),
         ("Start z Windows", "Start with Windows"), ("Otwórz", "Open"), ("Zakończ", "Exit"),
         ("Postać rozpoznana · Loopback / tunel · port 13328", "Character detected · Loopback / tunnel · port 13328"),

@@ -1,5 +1,4 @@
 //! Presence-only state from decoded game frames; raw bytes are never retained.
-//! Craft validation follows the GPL upstream StreamProcessor::craft_done.
 use a2tools_dps_meter_lib::capture::{loot::{self, Gather}, stream_processor::read_varint};
 
 #[derive(Default)]
@@ -77,19 +76,14 @@ impl Activity {
                 }
             }
         }
-        // A complete craft result, not the recipe list sent when opening a window.
-        if op == [0x8B, 0x8D] && body.len() == 41 && body[..3] == [0, 0, 1] {
-            let number = |at: usize| u32::from_le_bytes(body[at..at + 4].try_into().unwrap());
-            let recipe = number(3);
-            if recipe == number(9) && (1..=99_999_999).contains(&recipe)
-                && number(33).saturating_add(number(37)) <= 10_000 {
-                self.action = Some(("Crafting", now + 20_000));
-            }
-        }
+        // 8B 8D is observed for Substance Morph (including material conversions),
+        // not evidence of an ongoing workstation craft. Do not turn that instant
+        // operation into a 20-second Crafting status. Workstation start/result/
+        // cancel messages still need a verified fixture before enabling crafting.
     }
 
     pub fn describe(&self, base: &str, dungeon: i64, now: i64) -> String {
-        // Combat takes precedence over a recent completed craft or gather.
+        // Combat takes precedence over recent gathering.
         let festival = self.festival.filter(|(_, _, until)| now < *until)
             .map(|(_, name, _)| format!("Shugo Festival · {name}"));
         if base.contains("Fighting ") {
@@ -143,17 +137,23 @@ mod tests {
         assert_eq!(s.describe("In game", 0, 2_001), "In game");
     }
     #[test]
-    fn recipe_window_never_means_crafting_and_malformed_results_are_ignored() {
+    fn morph_results_and_recipe_windows_never_activate_crafting() {
         let mut s = Activity::default();
         s.observe(&packet([0x8F,0x8D], &[0; 41]), 1_000);
         s.observe(&packet([0x8B,0x8D], &[0; 41]), 1_000);
         assert_eq!(s.describe("In game", 0, 1_001), "In game");
-        let mut body = vec![0;41]; body[2]=1;
-        body[3..7].copy_from_slice(&32_070_001u32.to_le_bytes());
-        body[9..13].copy_from_slice(&32_070_001u32.to_le_bytes()); body[33]=1;
-        s.observe(&packet([0x8B,0x8D], &body), 1_000);
-        assert_eq!(s.describe("In game", 0, 2_000), "Crafting");
-        assert_eq!(s.describe("In game", 0, 21_000), "In game");
+        // Upstream's actual Odyle Energy morph-completion fixture.
+        let hex = "2f8b8d0000017259e90150057259e90101000000010000000000000000000000000000000000000001000000";
+        let morph: Vec<u8> = (0..hex.len()).step_by(2)
+            .map(|i| u8::from_str_radix(&hex[i..i+2],16).unwrap()).collect();
+        for now in [1_000, 2_000, 3_000] {
+            s.observe(&morph, now);
+            assert_eq!(s.describe("In game", 0, now + 1), "In game");
+        }
+        s.observe(&packet([0x31,0x8D], &[0,0,16,1,0,0,0]), 4_000);
+        s.observe(&morph, 4_001);
+        assert_eq!(s.describe("In game", 0, 4_002), "Gathering",
+            "a morph must not replace another confirmed activity");
     }
     #[test]
     fn map_changes_clear_actions_locations_are_not_published_and_bosses_win() {

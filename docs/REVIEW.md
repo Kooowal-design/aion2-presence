@@ -28,7 +28,7 @@ Candidate: **0.2.0-beta.5**.
 - [ ] Run Discord desktop and AION 2. If the game launcher errors, exit Presence, start the game first, then Presence. Leave ExitLag as configured.
 - [ ] Confirm character, class, CP and GS; CP/GS occur only on the first profile text line. Check the list, hover tooltip and profile separately.
 - [ ] Check class artwork on the new Discord identity. External image support and the actual appearance need live verification.
-- [ ] Gather and craft: activities appear and expire; opening the recipe window alone does not mean crafting.
+- [ ] Gathering appears and expires. Substance Morph must not activate an activity.
 - [ ] Check a dungeon and recognized boss. For Shugo, verify the correct competition name after entry and its removal after completion/return.
 - [ ] Exit the game and confirm activity clears. Hide the app and reopen the shortcut to confirm the window returns.
 - [ ] Check an update with Windows autostart enabled; autostart should use the new installation.
@@ -42,6 +42,6 @@ The publication repository uses a clean history with GitHub noreply identities. 
 
 ## Po polsku
 
-Sprawdź nowy instalator, skróty, języki, menu **Licencje i źródła**, nową integrację Discord i ikonki klas. Następnie sprawdź listę osób, podgląd po najechaniu i profil, crafting, zbieranie, dungeon/bossa oraz eksperymentalny status Shugo z nazwą konkurencji dla obu frakcji. Zweryfikuj wyczyszczenie statusu po zamknięciu gry i autostart po aktualizacji. Repozytorium jest publiczne; zweryfikuj to wydanie w rzeczywistej sesji.
+Sprawdź nowy instalator, skróty, języki, menu **Licencje i źródła**, nową integrację Discord i ikonki klas. Następnie sprawdź listę osób, podgląd po najechaniu i profil, zbieranie, dungeon/bossa oraz eksperymentalny status Shugo z nazwą konkurencji dla obu frakcji. Zweryfikuj wyczyszczenie statusu po zamknięciu gry i autostart po aktualizacji. Repozytorium jest publiczne; zweryfikuj to wydanie w rzeczywistej sesji.
 
 - [ ] Updates: startup/manual checks, available version notification, verified download, shutdown before installer, preserved folder/settings; reject corrupt downloads. Check offline behavior. Old versions require a manual update to beta.5 first.

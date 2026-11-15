@@ -19,12 +19,11 @@ The app runs in the background, reads character information through Npcap and up
 | Recognized dungeon | `Dungeon name (difficulty)` |
 | Fighting a recognized boss in a dungeon | `Dungeon name (difficulty) · Fighting Boss name` |
 | Fighting a recognized boss outside a dungeon | `Fighting Boss name` |
-| Crafting, after a confirmed completed craft | `Crafting` |
 | Gathering resources | `Gathering` |
 | Shugo competition — experimental, 9 competitions for both factions | `Shugo Festival · Defend Shugo Merchants` |
 | No recognized activity | `In game` |
 
-Dungeon and boss names are filled in from recognized game data. Boss combat takes priority over recent crafting or gathering. AFK and open-world locations are not detected.
+Dungeon and boss names are filled in from recognized game data. Boss combat takes priority over recent gathering. AFK and open-world locations are not detected.
 
 Dungeon names require a captured map-load message. Party information alone is not treated as your current location. If the app starts mid-session, the name may remain unavailable until the next map load; a departure or transition clears the previous location.
 
@@ -62,11 +61,11 @@ The installer and app support **English / Polski**. Use the language selector to
 - Activity cleared when the game closes, the capture engine stops responding or the app exits.
 - Minimize to the system tray, with optional launch at Windows startup.
 
-Gathering is detected from start/result messages and expires after 15/8 seconds without another event. Crafting is shown for 20 seconds after a confirmed completed craft; merely opening the recipe window does not activate it. Boss combat takes priority.
+Gathering is detected from start/result messages and expires after 15/8 seconds without another event. Boss combat takes priority.
 
 Experimental Shugo support identifies nine competitions on Elyos and Asmodian maps: Jump Jump, Mysterious Track, Odyle Flight Frenzy, Defend Shugo Merchants, Not This Tile?, Wraith Evasion, Hidden Lugi, Goldrin's Treasure and Up! Up! Up! The status includes the competition name after a known venue map or active run is received. Schedule broadcasts alone do not activate it. Run deadlines are capped at 20 minutes; without a deadline the lease is 10 minutes, and map-only detection lasts at most 20 minutes. Completion or departure clears the event. Live verification is still needed; see [Shugo detection and sources](docs/SHUGO.md).
 
-Outside recognized dungeon/boss activity, gathering, recent crafting or that confirmed Shugo run, the status is `In game`. Open-world locations and **AFK are not detected**.
+Outside recognized dungeon/boss activity, gathering or that confirmed Shugo run, the status is `In game`. Open-world locations and **AFK are not detected**.
 
 Discord controls placement and truncation of long text, as well as which activity is shown when several are active. The local preview is illustrative; check the actual display in Discord.
 

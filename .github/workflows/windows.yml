@@ -30,6 +30,18 @@ jobs:
       - name: Build and test
         shell: pwsh
         run: ./build.ps1 -PackageRelease -PublicRelease
+      - name: Package optional crafting metadata diagnostic
+        shell: pwsh
+        run: |
+          $folder = 'dist/crafting-diagnostic'
+          New-Item -ItemType Directory -Path $folder -Force | Out-Null
+          Copy-Item engine/target/release/aion-presence-engine.exe $folder
+          Copy-Item scripts/Diagnose-Crafting.ps1,scripts/Start-Diagnostic.cmd $folder
+          Copy-Item docs/CRAFTING-DIAGNOSTICS.md "$folder/README.md"
+          Copy-Item dist/app/LICENSE.txt,dist/app/NOTICE.md,dist/app/THIRD-PARTY-NOTICES.txt,dist/app/SOURCE.txt $folder
+          Compress-Archive -Path "$folder/*" -DestinationPath dist/Aion2Presence-Crafting-Diagnostic.zip
+          $hash = (Get-FileHash dist/Aion2Presence-Crafting-Diagnostic.zip -Algorithm SHA256).Hash.ToLowerInvariant()
+          Add-Content dist/SHA256SUMS.txt "$hash  Aion2Presence-Crafting-Diagnostic.zip"
       - uses: actions/upload-artifact@v4
         with:
           name: AionPresence-Windows
@@ -39,6 +51,7 @@ jobs:
             dist/SHA256SUMS.txt
             dist/Aion2Presence-Windows.zip
             dist/Aion2Presence-Source.zip
+            dist/Aion2Presence-Crafting-Diagnostic.zip
           retention-days: 30
       - name: Publish release
         shell: pwsh
@@ -48,4 +61,14 @@ jobs:
           [xml]$project = Get-Content AionPresence/AionPresence.csproj
           $version = $project.Project.PropertyGroup.Version
           $tag = "v$version"
-          gh release create $tag dist/Aion2Presence-Setup.exe dist/Aion2Presence.exe dist/Aion2Presence-Windows.zip dist/Aion2Presence-Source.zip dist/SHA256SUMS.txt --target "${{ github.sha }}" --prerelease --title "AION2 Presence v$version — Public beta" --notes-file docs/RELEASE-NOTES.md
+          gh release create $tag dist/Aion2Presence-Setup.exe dist/Aion2Presence.exe dist/Aion2Presence-Windows.zip dist/Aion2Presence-Source.zip dist/Aion2Presence-Crafting-Diagnostic.zip dist/SHA256SUMS.txt --target "${{ github.sha }}" --prerelease --title "AION2 Presence v$version — Public beta" --notes-file docs/RELEASE-NOTES.md
+          if ($LASTEXITCODE -ne 0) { throw 'Release publication failed' }
+          $previous = gh release view v0.2.0-beta.6 --json body | ConvertFrom-Json
+          if ($LASTEXITCODE -ne 0) { throw 'Cannot read previous release notes' }
+          $corrected = $previous.body.Replace(', crafting,', ',')
+          if ($corrected -ne $previous.body) {
+            $notes = Join-Path $env:RUNNER_TEMP 'beta6-corrected-notes.md'
+            [IO.File]::WriteAllText($notes, $corrected)
+            gh release edit v0.2.0-beta.6 --notes-file $notes
+            if ($LASTEXITCODE -ne 0) { throw 'Previous release note correction failed' }
+          }

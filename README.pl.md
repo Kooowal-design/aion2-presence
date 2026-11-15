@@ -19,12 +19,11 @@ Działa w tle, odczytując informacje o Twojej postaci przez Npcap i aktualizuj�
 | Rozpoznany dungeon | `Nazwa dungeona (poziom trudności)` |
 | Walka z rozpoznanym bossem w dungeonie | `Nazwa dungeona (poziom trudności) · Fighting Nazwa bossa` |
 | Walka z rozpoznanym bossem poza dungeonem | `Fighting Nazwa bossa` |
-| Crafting, po potwierdzonym wykonaniu receptury | `Crafting` |
 | Zbieranie surowców | `Gathering` |
 | Konkurencja Shugo — eksperymentalnie, 9 konkurencji obu frakcji | `Shugo Festival · Defend Shugo Merchants` |
 | Brak rozpoznanej aktywności | `In game` |
 
-Nazwy dungeona i bossa pochodzą z rozpoznanych danych gry. Walka z bossem ma pierwszeństwo przed ostatnim craftingiem i zbieraniem. AFK i lokacje otwartego świata nie są wykrywane. Tekst aktywności wysyłany na Discord pozostaje angielski.
+Nazwy dungeona i bossa pochodzą z rozpoznanych danych gry. Walka z bossem ma pierwszeństwo przed zbieraniem. AFK i lokacje otwartego świata nie są wykrywane. Tekst aktywności wysyłany na Discord pozostaje angielski.
 
 Nazwa dungeona wymaga odebrania komunikatu wczytania mapy. Sama informacja o grupie nie jest traktowana jako Twoja aktualna lokalizacja. Po uruchomieniu aplikacji w trakcie sesji nazwa może pojawić się dopiero przy kolejnym wczytaniu mapy; sygnał wyjścia lub przejścia czyści poprzednią lokalizację.
 
@@ -62,11 +61,11 @@ Uruchom tylko jedną aplikację wysyłającą status AION 2 do Discorda, aby sta
 
 Instalator i aplikacja obsługują **English / Polski**. Wybór języka jest zapamiętywany; domyślny jest angielski.
 
-Zbieranie jest rozpoznawane po komunikatach rozpoczęcia i wyniku; status wygasa po 15/8 sekundach bez kolejnego zdarzenia. Crafting jest widoczny przez 20 sekund po potwierdzonym wykonaniu receptury. Samo otwarcie okna receptur nie uruchamia tego statusu. Walka z bossem ma pierwszeństwo.
+Zbieranie jest rozpoznawane po komunikatach rozpoczęcia i wyniku; status wygasa po 15/8 sekundach bez kolejnego zdarzenia. Walka z bossem ma pierwszeństwo.
 
 Eksperymentalna obsługa Shugo rozpoznaje dziewięć konkurencji na mapach Elyosów i Asmodian: Jump Jump, Mysterious Track, Odyle Flight Frenzy, Defend Shugo Merchants, Not This Tile?, Wraith Evasion, Hidden Lugi, Goldrin's Treasure oraz Up! Up! Up! Status zawiera nazwę konkurencji, po rozpoznaniu jej mapy lub aktywnego runu. Sam harmonogram nie uruchamia statusu. Termin runu jest ograniczony do 20 minut; bez terminu status trwa do 10 minut, a sam odczyt mapy daje maksymalnie 20 minut. Koniec runu lub wyjście czyści status. Obsługa wymaga dalszego sprawdzenia w grze; szczegóły i źródła: [wykrywanie Shugo](docs/SHUGO.md).
 
-Poza rozpoznanym dungeonem/bossem, zbieraniem, ostatnim craftingiem i tym runem Shugo status to `In game`. **Nie rozpoznajemy lokacji otwartego świata ani AFK.**
+Poza rozpoznanym dungeonem/bossem, zbieraniem i tym runem Shugo status to `In game`. **Nie rozpoznajemy lokacji otwartego świata ani AFK.**
 
 Discord dostaje `status_display_type: 2` (Details), co zgodnie z dokumentacją wybiera szczegóły jako tekst na liście członków. Klient Discorda decyduje o miejscu wyświetlania i skracaniu długiego tekstu. Lokalny podgląd nie jest dowodem, że inny użytkownik widzi cały tekst. Ten efekt wymaga sprawdzenia w realnym Discordzie.
 
